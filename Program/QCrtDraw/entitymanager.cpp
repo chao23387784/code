@@ -140,6 +140,23 @@ void EntityManager::loadEntity(CrtObject *obj)
     }
 }
 
+int EntityManager::getAvaliableNumber(const QString &tableName)
+{
+    if(engine->IsConnAlive())
+    {
+        QSqlQuery query;
+        QString sql = QString("select max(number) from %1").arg(tableName);
+        if(engine->ExeQuery(sql,query))
+        {
+            if(query.first())
+            {
+                return query.value(0).toInt() + 1;
+            }
+        }
+    }
+    return -1;
+}
+
 
 bool EntityManager::save(CrtProject *proj)
 {

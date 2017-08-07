@@ -85,7 +85,7 @@ void CrtTreeItem::load(CrtObject *obj, int type)
                     item->setRow(i);
                     item->setColumn(0);
                     addChild(item);
-                    //item->load(item->Data(),type);
+                    item->load(item->Data(),type);
                 }
             }
             else if(!obj->Type().compare("loop"))

@@ -20,11 +20,13 @@ public:
     ~MainWindow();
 	void InitUi();
 	void InitConnect();
+    void InitModel();
+    void loadProject(QString path = "");
 private slots:
     void OnOpenProject();
     void OnCreateProject();
     void OnSaveProject();
-    void OnDeleteProject();
+    void OnCloseProject();
     void OnViewTransform();
     void OnAddController();
     void OnDeleteController();
@@ -50,7 +52,7 @@ private:
     QAction* btnCreateProj;
     QAction* btnOpenProj;
     QAction* btnSaveProj;
-    QAction* btnDeleteProj;
+    QAction* btnCloseProj;
     QAction* btnAddController;
     QAction* btnDeleteController;
     QAction* btnAddLoop;

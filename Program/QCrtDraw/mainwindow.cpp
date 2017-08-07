@@ -36,8 +36,8 @@ void MainWindow::InitUi()
     toolBar->addAction(btnOpenProj);
     btnSaveProj = new QAction(QIcon(":/img/save.png"),tr("Save Project"),this);
     toolBar->addAction(btnSaveProj);
-    btnDeleteProj = new QAction(QIcon(":/img/close.png"),tr("Delete Project"),this);
-    toolBar->addAction(btnDeleteProj);
+    btnCloseProj = new QAction(QIcon(":/img/close.png"),tr("Close Project"),this);
+    toolBar->addAction(btnCloseProj);
     btnAddController = new QAction(QIcon(":/img/controlleradd.png"),tr("Add Controller"),this);
     toolBar->addAction(btnAddController);
     btnDeleteController = new QAction(QIcon(":/img/controllersub.png"),tr("Delete Controller"),this);
@@ -57,28 +57,18 @@ void MainWindow::InitUi()
     btnDeleteLayer = new QAction(QIcon(":/img/dellayer.png"),tr("Delete Layer"),this);
     toolBar->addAction(btnDeleteLayer);
 
-    //toolBar->addSeparator();
-
-    //QButtonGroup* bg = new QButtonGroup(this);
     btnSetBackImage = new QAction(QIcon(":/img/map.png"),tr("Set BackImage"),this);
     btnPan = new QAction(QIcon(":/img/drag.png"),tr("Drag Map"),this);
     btnPan->toggled(true);
     btnZoomin = new QAction(QIcon(":/img/zoomin.png"),tr("Zoom In"),this);
-    //btnZoomin->setCheckable(true);
     btnZoomout = new QAction(QIcon(":/img/zoomout.png"),tr("Zoom Out"),this);
-    //btnZoomout->setCheckable(true);
     toolBar->addAction(btnSetBackImage);
     toolBar->addAction(btnPan);
-    //bg->addButton(btnPan);
     toolBar->addAction(btnZoomin);
-    //bg->addButton(btnZoomin);
     toolBar->addAction(btnZoomout);
-    //bg->addButton(btnZoomout);
 
     cmbDevList = new QComboBox();
     cmbDevList->setFixedWidth(180);
-
-    //QString path = QDir::currentPath();
 
     QDir dir(":/device");
     dir.setFilter(QDir::Files | QDir::NoSymLinks);
@@ -110,13 +100,11 @@ void MainWindow::InitUi()
     treeMap = new QTreeView(this);
     tabTree->addTab(treeMap,tr("Map"));
 
-    EntityManager* manager = new EntityManager();
-    manager->InitEngine();
     CrtMaster::GetInstance()->setProject(new CrtProject());
-    manager->load(CrtMaster::GetInstance()->Project());
     treeModel = new CrtTreeModel(this);
     treeProject->setModel(treeModel);
-    treeModel->load(CrtMaster::GetInstance()->Project());
+
+    CrtMaster::GetInstance()->setManager(new EntityManager());
 
     treePanel->setWidget(tabTree);
     treePanel->setWindowTitle(tr("Solution"));
@@ -150,7 +138,7 @@ void MainWindow::InitConnect()
     connect(btnCreateProj,SIGNAL(triggered(bool)),this,SLOT(OnCreateProject()));
     connect(btnOpenProj,SIGNAL(triggered(bool)),this,SLOT(OnOpenProject()));
     connect(btnSaveProj,SIGNAL(triggered(bool)),this,SLOT(OnSaveProject()));
-    connect(btnDeleteProj,SIGNAL(triggered(bool)),this,SLOT(OnDeleteProject()));
+    connect(btnCloseProj,SIGNAL(triggered(bool)),this,SLOT(OnCloseProject()));
     connect(btnPan,SIGNAL(toggled(bool)),this,SLOT(OnViewTransform()));
     connect(btnZoomin,SIGNAL(toggled(bool)),this,SLOT(OnViewTransform()));
     connect(btnZoomout,SIGNAL(toggled(bool)),this,SLOT(OnViewTransform()));
@@ -166,21 +154,67 @@ void MainWindow::InitConnect()
     connect(btnSetBackImage,SIGNAL(toggled(bool)),this,SLOT(OnSetBackImage()));
 }
 
+void MainWindow::InitModel()
+{
+    if(!treeModel)return;
+
+    treeModel->load(CrtMaster::GetInstance()->Project());
+}
+
+void MainWindow::loadProject(QString path)
+{
+    if(path.isEmpty())
+    {
+        CrtMaster::GetInstance()->Manager()->InitEngine();
+    }
+    else
+    {
+        if(!QFileInfo(path).exists())
+        {
+            QMessageBox::information(this,tr("warning"),tr("file not exists!"));
+            return;
+        }
+        CrtMaster::GetInstance()->Manager()->InitEngine(path);
+    }
+
+    CrtMaster::GetInstance()->setProject(new CrtProject());
+    CrtMaster::GetInstance()->Manager()->load(CrtMaster::GetInstance()->Project());
+
+    InitModel();
+}
+
 void MainWindow::OnOpenProject()
 {
+    QString path = QFileDialog::getOpenFileName(this,tr("Open Project File"),
+                                                QDir::currentPath(),
+                                                tr("SQLite Database Files (*.db)"));
+    if(!QFileInfo(path).exists())
+    {
+        QMessageBox::information(this,tr("warning"),tr("file not exists!"));
+        return;
+    }
 
+    loadProject(path);
 }
 
 void MainWindow::OnCreateProject()
 {
-
+    if(!CrtMaster::GetInstance()->Project())
+    {
+        QMessageBox::information(this,tr("warning"),tr("close current project first!"));
+        return;
+    }
+    CrtProject* proj = new CrtProject();
+    proj->setID(/*getid*/0);
+    proj->setName("project1");
+    CrtMaster::GetInstance()->setProject(proj);
 }
 
 void MainWindow::OnSaveProject()
 {
-    QString path = QFileDialog::getSaveFileName(this, tr("Save Map File"),
+    QString path = QFileDialog::getSaveFileName(this, tr("Save Project File"),
                                                 QDir::currentPath(),
-                                                tr("Images (*.png *.wmf *.jpg)"));
+                                                tr("SQLite Database File (*.db)"));
     if(QFileInfo(path).exists())
     {
         QMessageBox::information(this,tr("warning"),tr("file exists!"));
@@ -194,9 +228,11 @@ void MainWindow::OnSaveProject()
     wmf.end();*/
 }
 
-void MainWindow::OnDeleteProject()
+void MainWindow::OnCloseProject()
 {
-
+    if(!CrtMaster::GetInstance()->Project())return;
+    //model clear
+    //entity clear
 }
 
 void MainWindow::OnViewTransform()
@@ -280,7 +316,7 @@ void MainWindow::OnEditDeviceChanged(int nIndex)
 void MainWindow::UpdateToolbarState(int state)
 {
     foreach(QAction* btn,QList<QAction*>()<<btnCreateProj<<btnOpenProj<<btnSaveProj
-            <<btnDeleteProj<<btnAddController<<btnDeleteController<<btnAddLoop
+            <<btnCloseProj<<btnAddController<<btnDeleteController<<btnAddLoop
             <<btnDeleteLoop<<btnAddBuilding<<btnDeleteBuilding<<btnAddLayer
             <<btnDeleteLayer<<btnSetBackImage<<btnPan<<btnZoomin<<btnZoomout)
     {
@@ -294,7 +330,7 @@ void MainWindow::UpdateToolbarState(int state)
         btnCreateProj->setVisible(true);
         btnOpenProj->setVisible(true);
         btnSaveProj->setVisible(true);
-        btnDeleteProj->setVisible(true);
+        btnCloseProj->setVisible(true);
     }
         break;
     case 1://controller

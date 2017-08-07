@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'mainwindow.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.1)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'mainwindow.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.5.0. It"
+#error "This file was generated using the moc from 5.5.1. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWindow_t {
     QByteArrayData data[20];
-    char stringdata0[269];
+    char stringdata0[268];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -34,25 +34,25 @@ QT_MOC_LITERAL(1, 11, 13), // "OnOpenProject"
 QT_MOC_LITERAL(2, 25, 0), // ""
 QT_MOC_LITERAL(3, 26, 15), // "OnCreateProject"
 QT_MOC_LITERAL(4, 42, 13), // "OnSaveProject"
-QT_MOC_LITERAL(5, 56, 15), // "OnDeleteProject"
-QT_MOC_LITERAL(6, 72, 15), // "OnViewTransform"
-QT_MOC_LITERAL(7, 88, 15), // "OnAddController"
-QT_MOC_LITERAL(8, 104, 18), // "OnDeleteController"
-QT_MOC_LITERAL(9, 123, 9), // "OnAddLoop"
-QT_MOC_LITERAL(10, 133, 12), // "OnDeleteLoop"
-QT_MOC_LITERAL(11, 146, 13), // "OnAddBuilding"
-QT_MOC_LITERAL(12, 160, 16), // "OnDeleteBuilding"
-QT_MOC_LITERAL(13, 177, 10), // "OnAddLayer"
-QT_MOC_LITERAL(14, 188, 13), // "OnDeleteLayer"
-QT_MOC_LITERAL(15, 202, 14), // "OnSetBackImage"
-QT_MOC_LITERAL(16, 217, 19), // "OnEditDeviceChanged"
-QT_MOC_LITERAL(17, 237, 6), // "nIndex"
-QT_MOC_LITERAL(18, 244, 18), // "UpdateToolbarState"
-QT_MOC_LITERAL(19, 263, 5) // "state"
+QT_MOC_LITERAL(5, 56, 14), // "OnCloseProject"
+QT_MOC_LITERAL(6, 71, 15), // "OnViewTransform"
+QT_MOC_LITERAL(7, 87, 15), // "OnAddController"
+QT_MOC_LITERAL(8, 103, 18), // "OnDeleteController"
+QT_MOC_LITERAL(9, 122, 9), // "OnAddLoop"
+QT_MOC_LITERAL(10, 132, 12), // "OnDeleteLoop"
+QT_MOC_LITERAL(11, 145, 13), // "OnAddBuilding"
+QT_MOC_LITERAL(12, 159, 16), // "OnDeleteBuilding"
+QT_MOC_LITERAL(13, 176, 10), // "OnAddLayer"
+QT_MOC_LITERAL(14, 187, 13), // "OnDeleteLayer"
+QT_MOC_LITERAL(15, 201, 14), // "OnSetBackImage"
+QT_MOC_LITERAL(16, 216, 19), // "OnEditDeviceChanged"
+QT_MOC_LITERAL(17, 236, 6), // "nIndex"
+QT_MOC_LITERAL(18, 243, 18), // "UpdateToolbarState"
+QT_MOC_LITERAL(19, 262, 5) // "state"
 
     },
     "MainWindow\0OnOpenProject\0\0OnCreateProject\0"
-    "OnSaveProject\0OnDeleteProject\0"
+    "OnSaveProject\0OnCloseProject\0"
     "OnViewTransform\0OnAddController\0"
     "OnDeleteController\0OnAddLoop\0OnDeleteLoop\0"
     "OnAddBuilding\0OnDeleteBuilding\0"
@@ -123,7 +123,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 0: _t->OnOpenProject(); break;
         case 1: _t->OnCreateProject(); break;
         case 2: _t->OnSaveProject(); break;
-        case 3: _t->OnDeleteProject(); break;
+        case 3: _t->OnCloseProject(); break;
         case 4: _t->OnViewTransform(); break;
         case 5: _t->OnAddController(); break;
         case 6: _t->OnDeleteController(); break;

@@ -1,8 +1,9 @@
 #include "crttreemodel.h"
+#include "common.h"
 
 CrtTreeModel::CrtTreeModel(QObject *parent):QAbstractItemModel(parent)
 {
-
+    root = NULL;
 }
 
 QModelIndex CrtTreeModel::index(int row, int column, const QModelIndex &parent) const
@@ -50,6 +51,8 @@ Qt::ItemFlags CrtTreeModel::flags(const QModelIndex &index) const
 
 int CrtTreeModel::rowCount(const QModelIndex &parent) const
 {
+    if(root == NULL)return 0;
+
     CrtTreeItem *parentItem;
 
     if(!parent.isValid())
@@ -82,14 +85,16 @@ bool CrtTreeModel::load(CrtProject *proj, int type)
 {
     if(proj != NULL)
     {
+        SAFE_DELETE(root);
         root = new CrtTreeItem();
         root->setParent(NULL);
         root->setColumn(0);
         root->setRow(1);
         root->setData(proj);
         root->load(proj,type);
-        //beginResetModel();
-        //endResetModel();
+        //update view
+        beginResetModel();
+        endResetModel();
         return true;
     }
     return false;

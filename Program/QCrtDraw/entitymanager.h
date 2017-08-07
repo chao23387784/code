@@ -17,6 +17,7 @@ public:
     bool load(CrtProject* proj);
     bool save(CrtProject* proj);
     void loadEntity(CrtObject* obj);
+    int getAvaliableNumber(const QString& tableName);
 private:
     SqliteEngine* engine;
 };

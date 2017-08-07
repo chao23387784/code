@@ -5,7 +5,6 @@
 #include "crtcontroller.h"
 #include "crtbuilding.h"
 #include "crtobject.h"
-#include "crtobject.h"
 
 class CrtProject : public CrtObject
 {
