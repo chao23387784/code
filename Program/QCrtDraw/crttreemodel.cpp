@@ -93,8 +93,7 @@ bool CrtTreeModel::load(CrtProject *proj, int type)
         root->setData(proj);
         root->load(proj,type);
         //update view
-        beginResetModel();
-        endResetModel();
+        reset();
         return true;
     }
     return false;

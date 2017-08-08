@@ -10,6 +10,7 @@ class CrtLayer : public CrtObject
 {
 public:
     explicit CrtLayer(CrtObject *parent = 0);
+    ~CrtLayer();
     void setScene(CrtScene* s);
     CrtScene* Scene();
 private:

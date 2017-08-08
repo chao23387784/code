@@ -37,13 +37,18 @@ private slots:
     void OnAddLayer();
     void OnDeleteLayer();
     void OnSetBackImage();
+    void OnProjectItemChanged();
+    void OnMapItemChanged();
 public slots:
     void OnEditDeviceChanged(int nIndex);
     void UpdateToolbarState(int state);
+protected:
+    void closeEvent(QCloseEvent *);
 private:
     QTreeView* treeProject;
     QTreeView* treeMap;
-    CrtTreeModel* treeModel;
+    CrtTreeModel* treeProjectModel;
+    CrtTreeModel* treeMapModel;
 	QTableWidget* tbProp;
     CrtView* mapView;
     CrtScene* mapScene;
@@ -61,6 +66,8 @@ private:
     QAction* btnDeleteBuilding;
     QAction* btnAddLayer;
     QAction* btnDeleteLayer;
+    //QAction* btnAddDevice;
+    //QAction* btnDeleteDevice;
 
     QComboBox* cmbDevList;
 

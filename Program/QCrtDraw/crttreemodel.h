@@ -16,6 +16,7 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     bool load(CrtProject* proj,int type = 0);//0 project,1 map;
     CrtProject* save(int type = 0);
+    void reset(){beginResetModel();endResetModel();}
 private:
     CrtTreeItem* root;
 };

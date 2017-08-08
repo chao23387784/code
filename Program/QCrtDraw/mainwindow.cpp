@@ -11,6 +11,7 @@
 #include <QTabWidget>
 #include "crtmaster.h"
 #include "entitymanager.h"
+#include "common.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -38,6 +39,7 @@ void MainWindow::InitUi()
     toolBar->addAction(btnSaveProj);
     btnCloseProj = new QAction(QIcon(":/img/close.png"),tr("Close Project"),this);
     toolBar->addAction(btnCloseProj);
+    toolBar->addSeparator();
     btnAddController = new QAction(QIcon(":/img/controlleradd.png"),tr("Add Controller"),this);
     toolBar->addAction(btnAddController);
     btnDeleteController = new QAction(QIcon(":/img/controllersub.png"),tr("Delete Controller"),this);
@@ -101,8 +103,11 @@ void MainWindow::InitUi()
     tabTree->addTab(treeMap,tr("Map"));
 
     CrtMaster::GetInstance()->setProject(new CrtProject());
-    treeModel = new CrtTreeModel(this);
-    treeProject->setModel(treeModel);
+    treeProjectModel = new CrtTreeModel(this);
+    treeProject->setModel(treeProjectModel);
+    treeMapModel = new CrtTreeModel(this);
+    treeMap->setModel(treeMapModel);
+
 
     CrtMaster::GetInstance()->setManager(new EntityManager());
 
@@ -139,26 +144,29 @@ void MainWindow::InitConnect()
     connect(btnOpenProj,SIGNAL(triggered(bool)),this,SLOT(OnOpenProject()));
     connect(btnSaveProj,SIGNAL(triggered(bool)),this,SLOT(OnSaveProject()));
     connect(btnCloseProj,SIGNAL(triggered(bool)),this,SLOT(OnCloseProject()));
-    connect(btnPan,SIGNAL(toggled(bool)),this,SLOT(OnViewTransform()));
-    connect(btnZoomin,SIGNAL(toggled(bool)),this,SLOT(OnViewTransform()));
-    connect(btnZoomout,SIGNAL(toggled(bool)),this,SLOT(OnViewTransform()));
+    connect(btnPan,SIGNAL(triggered(bool)),this,SLOT(OnViewTransform()));
+    connect(btnZoomin,SIGNAL(triggered(bool)),this,SLOT(OnViewTransform()));
+    connect(btnZoomout,SIGNAL(triggered(bool)),this,SLOT(OnViewTransform()));
     //connect(cmbDevList,SIGNAL(currentIndexChanged(int)),this,SLOT(OnEditDeviceChanged(int)));
-    connect(btnAddController,SIGNAL(toggled(bool)),this,SLOT(OnAddController()));
-    connect(btnDeleteController,SIGNAL(toggled(bool)),this,SLOT(OnDeleteController()));
-    connect(btnAddLoop,SIGNAL(toggled(bool)),this,SLOT(OnAddLoop()));
-    connect(btnDeleteLoop,SIGNAL(toggled(bool)),this,SLOT(OnDeleteLoop()));
-    connect(btnAddBuilding,SIGNAL(toggled(bool)),this,SLOT(OnAddBuilding()));
-    connect(btnDeleteBuilding,SIGNAL(toggled(bool)),this,SLOT(OnDeleteBuilding()));
-    connect(btnAddLayer,SIGNAL(toggled(bool)),this,SLOT(OnAddLayer()));
-    connect(btnDeleteLayer,SIGNAL(toggled(bool)),this,SLOT(OnDeleteLayer()));
-    connect(btnSetBackImage,SIGNAL(toggled(bool)),this,SLOT(OnSetBackImage()));
+    connect(btnAddController,SIGNAL(triggered(bool)),this,SLOT(OnAddController()));
+    connect(btnDeleteController,SIGNAL(triggered(bool)),this,SLOT(OnDeleteController()));
+    connect(btnAddLoop,SIGNAL(triggered(bool)),this,SLOT(OnAddLoop()));
+    connect(btnDeleteLoop,SIGNAL(triggered(bool)),this,SLOT(OnDeleteLoop()));
+    connect(btnAddBuilding,SIGNAL(triggered(bool)),this,SLOT(OnAddBuilding()));
+    connect(btnDeleteBuilding,SIGNAL(triggered(bool)),this,SLOT(OnDeleteBuilding()));
+    connect(btnAddLayer,SIGNAL(triggered(bool)),this,SLOT(OnAddLayer()));
+    connect(btnDeleteLayer,SIGNAL(triggered(bool)),this,SLOT(OnDeleteLayer()));
+    connect(btnSetBackImage,SIGNAL(triggered(bool)),this,SLOT(OnSetBackImage()));
+    connect(treeProject,SIGNAL(clicked(QModelIndex)),this,SLOT(OnProjectItemChanged()));
+    connect(treeMap,SIGNAL(clicked(QModelIndex)),this,SLOT(OnMapItemChanged()));
 }
 
 void MainWindow::InitModel()
 {
-    if(!treeModel)return;
+    if(!treeProjectModel)return;
 
-    treeModel->load(CrtMaster::GetInstance()->Project());
+    treeProjectModel->load(CrtMaster::GetInstance()->Project());
+    treeMapModel->load(CrtMaster::GetInstance()->Project(),1);
 }
 
 void MainWindow::loadProject(QString path)
@@ -221,6 +229,11 @@ void MainWindow::OnSaveProject()
         return;
     }
 
+    if(!CrtMaster::GetInstance()->Manager()->save(CrtMaster::GetInstance()->Project()))
+    {
+        QMessageBox::information(this,tr("error"),tr("project save failed!"));
+    }
+
     /*Libwmf::WmfWriter  wmf(path);
     wmf.begin();
     wmf.setWindow(0, 0, 200, 200);
@@ -253,17 +266,82 @@ void MainWindow::OnViewTransform()
 
 void MainWindow::OnAddController()
 {
+    QModelIndex index = treeProject->currentIndex();
+    if(!index.isValid())return;
+    CrtTreeItem* parent = (CrtTreeItem*)index.internalPointer();
+    CrtProject* proj = (CrtProject*)parent->Data();
+    if(parent && proj)
+    {
+        CrtController* controller = new CrtController(proj);
+        //this id is not correct
+        controller->setID(CrtMaster::GetInstance()->Manager()->getAvaliableNumber("ControllerTb"));
+        controller->setName(tr("NT-Controller"));
+        controller->setStauts(New);
+        proj->m_lstController.append(controller);
 
+        CrtTreeItem* item = new CrtTreeItem();
+        item->setParent(parent);
+        item->setData(controller);
+        item->setColumn(0);
+        parent->addChild(item);
+        item->setRow(parent->indexOf(item));
+
+        treeProjectModel->reset();
+        treeProject->expand(index);
+        treeProject->setCurrentIndex(index);
+
+        proj->m_lstModifyObjects.append(controller);
+    }
 }
 
 void MainWindow::OnDeleteController()
 {
+    QModelIndex index = treeProject->currentIndex();
+    if(!index.isValid())return;
+    CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
+    if(!item)return;
+    CrtController* controller = (CrtController*)item->Data();
+    CrtProject* proj = (CrtProject*)controller->Parent();
+    CrtTreeItem* parent = item->Parent();
+    if(!parent)return;
+    parent->removeChild(parent->indexOf(item));
 
+    treeProjectModel->reset();
+    treeProject->setCurrentIndex(QModelIndex());
+
+    proj->m_lstController.removeOne(controller);
+    controller->setStauts(Delete);
+    proj->m_lstModifyObjects.append(controller);
 }
 
 void MainWindow::OnAddLoop()
 {
+    QModelIndex index = treeProject->currentIndex();
+    if(!index.isValid())return;
+    CrtTreeItem* parent = (CrtTreeItem*)index.internalPointer();
+    CrtController* controller = (CrtController*)parent->Data();
+    if(parent && controller)
+    {
+        CrtLoop* loop = new CrtLoop(controller);
+        //this id is not correct
+        loop->setID(CrtMaster::GetInstance()->Manager()->getAvaliableNumber("LoopTb"));
+        loop->setName(tr("NT-Loop"));
+        loop->setStauts(New);
+        controller->m_lstLoop.append(loop);
 
+        CrtTreeItem* item = new CrtTreeItem();
+        item->setParent(parent);
+        item->setData(loop);
+        item->setColumn(0);
+        parent->addChild(item);
+        item->setRow(parent->indexOf(item));
+
+        treeProjectModel->reset();
+        treeProject->expand(index);
+        treeProject->setCurrentIndex(index);
+
+        CrtMaster::GetInstance()->Project()->m_lstModifyObjects.append(loop);
+    }
 }
 
 void MainWindow::OnDeleteLoop()
@@ -307,6 +385,42 @@ void MainWindow::OnSetBackImage()
     mapView->setSceneRect(map->boundingRect());
 }
 
+void MainWindow::OnProjectItemChanged()
+{
+    QModelIndex index = treeProject->currentIndex();
+    if(!index.isValid())return;
+    CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
+    if(item)
+    {
+        if(!item->Data()->Type().compare("project"))
+           emit UpdateToolbarState(1);
+        else if(!item->Data()->Type().compare("controller"))
+            emit UpdateToolbarState(2);
+        else if(!item->Data()->Type().compare("loop"))
+            emit UpdateToolbarState(6);
+        else
+            emit UpdateToolbarState(0);
+    }
+}
+
+void MainWindow::OnMapItemChanged()
+{
+    QModelIndex index = treeMap->currentIndex();
+    if(!index.isValid())return;
+    CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
+    if(item)
+    {
+        if(!item->Data()->Type().compare("project"))
+           emit UpdateToolbarState(3);
+        else if(!item->Data()->Type().compare("building"))
+            emit UpdateToolbarState(4);
+        else if(!item->Data()->Type().compare("layer"))
+            emit UpdateToolbarState(5);
+        else
+            emit UpdateToolbarState(0);
+    }
+}
+
 void MainWindow::OnEditDeviceChanged(int nIndex)
 {
     mapView->setViewMode(Edit);
@@ -323,6 +437,11 @@ void MainWindow::UpdateToolbarState(int state)
         btn->setVisible(false);
     }
 
+    btnCreateProj->setVisible(true);
+    btnOpenProj->setVisible(true);
+    btnSaveProj->setVisible(true);
+    btnCloseProj->setVisible(true);
+
     switch(state)
     {
     case 0://project
@@ -336,34 +455,42 @@ void MainWindow::UpdateToolbarState(int state)
     case 1://controller
     {
         btnAddController->setVisible(true);
-        btnDeleteController->setVisible(true);
     }
         break;
     case 2://loop
     {
+        btnDeleteController->setVisible(true);
         btnAddLoop->setVisible(true);
-        btnDeleteLoop->setVisible(true);
     }
         break;
     case 3://building
     {
         btnAddBuilding->setVisible(true);
-        btnDeleteBuilding->setVisible(true);
     }
         break;
     case 4://layer
     {
+        btnDeleteBuilding->setVisible(true);
         btnAddLayer->setVisible(true);
-        btnDeleteLayer->setVisible(true);
     }
         break;
     case 5://map
     {
+        btnDeleteLayer->setVisible(true);
         btnSetBackImage->setVisible(true);
         btnPan->setVisible(true);
         btnZoomin->setVisible(true);
         btnZoomout->setVisible(true);
     }
         break;
+    case 6://device
+    {
+        btnDeleteLoop->setVisible(true);
     }
+    }
+}
+
+void MainWindow::closeEvent(QCloseEvent *)
+{
+    CrtMaster::GetInstance()->Destroy();
 }

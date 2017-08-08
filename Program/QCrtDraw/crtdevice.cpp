@@ -6,6 +6,11 @@ CrtDevice::CrtDevice(CrtObject *parent) : CrtObject(parent)
     setType("device");
 }
 
+CrtDevice::~CrtDevice()
+{
+
+}
+
 /*void CrtDevice::setDeviceType(int t)
 {
     nType = t;

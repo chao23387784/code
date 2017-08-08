@@ -24,6 +24,8 @@ CrtMaster *CrtMaster::GetInstance()
 void CrtMaster::Destroy()
 {
     //内存回收，工具类析构
+    SAFE_DELETE(project);
+    SAFE_DELETE(manager);
     SAFE_DELETE(m_inst);
 }
 

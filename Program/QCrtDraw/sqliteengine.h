@@ -23,6 +23,9 @@ public:
     bool IsTableExist(const QString& tableName);
     bool CreateDefaultCrtTables();
     QString PathName(){return pathName;}
+    bool beginTransaction();
+    bool endTransaction();
+    bool rollback();
 private:
     QSqlDatabase conn;
     QString pathName;

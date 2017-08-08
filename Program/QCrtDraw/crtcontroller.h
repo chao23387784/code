@@ -9,6 +9,7 @@ class CrtController : public CrtObject
 {
 public:
     explicit CrtController(CrtObject *parent = 0);
+    ~CrtController();
 public:
     QList<CrtLoop*> m_lstLoop;
 };

@@ -13,11 +13,19 @@ class EntityManager
 {
 public:
     EntityManager();
+    ~EntityManager();
     void InitEngine(QString dbPath = "NtCrt.db",QString userName = "neat",QString password = "123");
     bool load(CrtProject* proj);
     bool save(CrtProject* proj);
-    void loadEntity(CrtObject* obj);
     int getAvaliableNumber(const QString& tableName);
+    int getAvaliableControllerNumber(int proj_id);
+    int getAvaliableLoopNumber(int controller_id,int proj_id);
+    int getAvaliableBuildingNumber(int proj_id);
+    int getAvaliableLayerNumber(int building_id,int proj_id);
+    int getAvaliableDeviceNumber(int loop_id,int controller_id,int proj_id);
+private:
+    void loadEntity(CrtObject* obj);
+    bool saveEntity(CrtObject* obj);
 private:
     SqliteEngine* engine;
 };

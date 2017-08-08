@@ -16,11 +16,17 @@ public:
     CrtObject* Parent(){return parent;}
     void setType(const QString strType){type = strType;}
     QString Type(){return type;}
+    void setStauts(int status){this->status = status;}
+    int Status(){return status;}
+    void setKey(int k){key = k;}
+    int Key(){return key;}
 private:
     int id;
     QString name;
     QString type;
     CrtObject* parent;
+    int status;
+    int key;
 };
 
 #endif // CRTOBJECT_H

@@ -156,3 +156,21 @@ bool SqliteEngine::CreateDefaultCrtTables()
     }
     return true;
 }
+
+bool SqliteEngine::beginTransaction()
+{
+    if(!conn.isOpen())return false;
+    return conn.transaction();
+}
+
+bool SqliteEngine::endTransaction()
+{
+    if(!conn.isOpen())return false;
+    return conn.commit();
+}
+
+bool SqliteEngine::rollback()
+{
+    if(!conn.isOpen())return false;
+    return conn.rollback();
+}

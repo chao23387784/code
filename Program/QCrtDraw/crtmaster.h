@@ -9,7 +9,7 @@ class CrtMaster
 {
 public:
     static CrtMaster* GetInstance();
-    static void Destroy();
+    void Destroy();
     void setProject(CrtProject* proj);
     CrtProject* Project(){return project;}
     void setManager(EntityManager* manager);
