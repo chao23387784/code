@@ -45,10 +45,15 @@ void MainWindow::InitUi()
     btnDeleteController = new QAction(QIcon(":/img/controllersub.png"),tr("Delete Controller"),this);
     toolBar->addAction(btnDeleteController);
 
-    btnAddLoop = new QAction(QIcon(":/img/add.png"),tr("Add Loop"),this);
+    btnAddLoop = new QAction(QIcon(":/img/addloop.png"),tr("Add Loop"),this);
     toolBar->addAction(btnAddLoop);
-    btnDeleteLoop = new QAction(QIcon(":/img/sub.png"),tr("Delete Loop"),this);
+    btnDeleteLoop = new QAction(QIcon(":/img/delloop.png"),tr("Delete Loop"),this);
     toolBar->addAction(btnDeleteLoop);
+
+    btnAddDevice = new QAction(QIcon(":/img/adddev.png"),tr("Add Device"),this);
+    toolBar->addAction(btnAddDevice);
+    btnDeleteDevice = new QAction(QIcon(":/img/deldev.png"),tr("Delete Device"),this);
+    toolBar->addAction(btnDeleteDevice);
 
     btnAddBuilding = new QAction(QIcon(":/img/addcatigory.png"),tr("Add Building"),this);
     toolBar->addAction(btnAddBuilding);
@@ -149,6 +154,8 @@ void MainWindow::InitConnect()
     connect(btnDeleteController,SIGNAL(triggered(bool)),this,SLOT(OnDeleteController()));
     connect(btnAddLoop,SIGNAL(triggered(bool)),this,SLOT(OnAddLoop()));
     connect(btnDeleteLoop,SIGNAL(triggered(bool)),this,SLOT(OnDeleteLoop()));
+    connect(btnAddDevice,SIGNAL(triggered(bool)),this,SLOT(OnAddDevice()));
+    connect(btnDeleteDevice,SIGNAL(triggered(bool)),this,SLOT(OnDeleteDevice()));
     connect(btnAddBuilding,SIGNAL(triggered(bool)),this,SLOT(OnAddBuilding()));
     connect(btnDeleteBuilding,SIGNAL(triggered(bool)),this,SLOT(OnDeleteBuilding()));
     connect(btnAddLayer,SIGNAL(triggered(bool)),this,SLOT(OnAddLayer()));
@@ -347,6 +354,16 @@ void MainWindow::OnDeleteLoop()
     SAFE_DELETE(loop);
 }
 
+void MainWindow::OnAddDevice()
+{
+
+}
+
+void MainWindow::OnDeleteDevice()
+{
+
+}
+
 void MainWindow::OnAddBuilding()
 {
     QModelIndex index = treeMap->currentIndex();
@@ -452,6 +469,8 @@ void MainWindow::OnProjectItemChanged()
             emit UpdateToolbarState(2);
         else if(!item->Data()->Type().compare("loop"))
             emit UpdateToolbarState(6);
+        else if(item->Data()->Type().compare("device"))
+            emit UpdateToolbarState(7);
         else
             emit UpdateToolbarState(0);
     }
@@ -485,7 +504,7 @@ void MainWindow::UpdateToolbarState(int state)
 {
     foreach(QAction* btn,QList<QAction*>()<<btnCreateProj<<btnOpenProj<<btnSaveProj
             <<btnCloseProj<<btnAddController<<btnDeleteController<<btnAddLoop
-            <<btnDeleteLoop<<btnAddBuilding<<btnDeleteBuilding<<btnAddLayer
+            <<btnDeleteLoop<<btnAddDevice<<btnDeleteDevice<<btnAddBuilding<<btnDeleteBuilding<<btnAddLayer
             <<btnDeleteLayer<<btnSetBackImage<<btnPan<<btnZoomin<<btnZoomout)
     {
         btn->setVisible(false);
@@ -539,8 +558,15 @@ void MainWindow::UpdateToolbarState(int state)
         break;
     case 6://device
     {
+        btnAddDevice->setVisible(true);
         btnDeleteLoop->setVisible(true);
     }
+        break;
+    case 7:
+    {
+        btnDeleteDevice->setVisible(true);
+    }
+        break;
     }
 }
 

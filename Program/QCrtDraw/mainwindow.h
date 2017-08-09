@@ -33,6 +33,8 @@ private slots:
     void OnDeleteController();
     void OnAddLoop();
     void OnDeleteLoop();
+    void OnAddDevice();
+    void OnDeleteDevice();
     void OnAddBuilding();
     void OnDeleteBuilding();
     void OnAddLayer();
@@ -67,8 +69,8 @@ private:
     QAction* btnDeleteBuilding;
     QAction* btnAddLayer;
     QAction* btnDeleteLayer;
-    //QAction* btnAddDevice;
-    //QAction* btnDeleteDevice;
+    QAction* btnAddDevice;
+    QAction* btnDeleteDevice;
 
     QComboBox* cmbDevList;
 

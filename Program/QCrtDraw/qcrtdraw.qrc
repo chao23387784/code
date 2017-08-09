@@ -213,5 +213,9 @@
         <file>img/zoomout.png</file>
         <file>img/zoomreal.png</file>
         <file>img/draw.ico</file>
+        <file>img/delloop.png</file>
+        <file>img/deldev.png</file>
+        <file>img/addloop.png</file>
+        <file>img/adddev.png</file>
     </qresource>
 </RCC>

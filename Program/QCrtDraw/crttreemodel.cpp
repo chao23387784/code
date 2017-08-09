@@ -81,6 +81,15 @@ QVariant CrtTreeModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+bool CrtTreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if(!index.isValid())return false;
+    CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
+    CrtObject* data = item->Data();
+    data->setName(value.toString());
+    return true;
+}
+
 bool CrtTreeModel::load(CrtProject *proj, int type)
 {
     if(proj != NULL)
