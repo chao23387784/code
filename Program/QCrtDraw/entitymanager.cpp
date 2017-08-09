@@ -156,211 +156,92 @@ void EntityManager::loadEntity(CrtObject *obj)
 
 bool EntityManager::saveEntity(CrtObject *obj)
 {
-    return false;
-    /*if(!engine->IsConnAlive())return false;
+    if(!engine->IsConnAlive())return false;
     if(!obj)return true;
 
     if(obj->Type().compare("project"))
     {
         QSqlQuery query;
-        switch(obj->Status())
-        {
-        case New:
-        {
-            query.prepare("insert into ProjectTb(id,name) values(:id,:name)");
-            query.bindValue(":id",obj->ID());
-            query.bindValue(":name",obj->Name());
-        }
-            break;
-        case Modify:
-        {
-            query.prepare("update ProjectTb set name = :name where id = :id");
-            query.bindValue(":id",obj->Key());
-            query.bindValue(":name",obj->Name());
-        }
-            break;
-        case Delete:
-        {
-            query.prepare("delete * from ProjectTb where id = :id");
-            query.bindValue(":id",obj->Key());
-        }
-            break;
-        default:{return false;}
-        }
+
+        query.prepare("insert into ProjectTb(id,name) values(:id,:name)");
+        query.bindValue(":id",obj->ID());
+        query.bindValue(":name",obj->Name());
 
         if(!query.exec())return false;
+
+        foreach(CrtObject* item,static_cast<CrtProject*>(obj)->m_lstController)
+            if(!saveEntity(item))return false;
+
+        foreach(CrtObject* item,static_cast<CrtProject*>(obj)->m_lstBuilding)
+            if(!saveEntity(item))return false;
     }
     else if(obj->Type().compare("controller"))
     {
         QSqlQuery query;
-        switch(obj->Status())
-        {
-        case New:
-        {
-            query.prepare("insert into ControllerTb(number,name,project_id) values(:number,:name,:proj_id)");
-            query.bindValue(":number",obj->ID());
-            query.bindValue(":name",obj->Name());
-            query.bindValue(":proj_id",obj->Parent()->ID());
-        }
-            break;
-        case Modify:
-        {
-            query.prepare("update ControllerTb set number = :number,name = :name,project_id = :proj_id where id = :id");
-            query.bindValue(":number",obj->ID());
-            query.bindValue(":name",obj->Name());
-            query.bindValue(":proj_id",obj->Parent()->ID());
-            query.bindValue(":id",obj->Key());
-        }
-            break;
-        case Delete:
-        {
-            query.prepare("delete * from ControllerTb where id = :id");
-            query.bindValue(":id",obj->Key());
-        }
-            break;
-        default:{return false;}
-        }
+
+        query.prepare("insert into ControllerTb(number,name,project_id) values(:number,:name,:proj_id)");
+        query.bindValue(":number",obj->ID());
+        query.bindValue(":name",obj->Name());
+        query.bindValue(":proj_id",obj->Parent()->ID());
 
         if(!query.exec())return false;
+
+        foreach(CrtObject* item,static_cast<CrtController*>(obj)->m_lstLoop)
+            if(!saveEntity(item))return false;
     }
     else if(obj->Type().compare("loop"))
     {
         QSqlQuery query;
-        switch(obj->Status())
-        {
-        case New:
-        {
-            query.prepare("insert into LoopTb(number,name,controller_id) values(:number,:name,:controller_id)");
-            query.bindValue(":number",obj->ID());
-            query.bindValue(":name",obj->Name());
-            query.bindValue(":controller_id",obj->Parent()->ID());
-        }
-            break;
-        case Modify:
-        {
-            query.prepare("update LoopTb set number = :number,name = :name,controller_id = :controller_id where id = :id");
-            query.bindValue(":number",obj->ID());
-            query.bindValue(":name",obj->Name());
-            query.bindValue(":controller_id",obj->Parent()->ID());
-            query.bindValue(":id",obj->Key());
-        }
-            break;
-        case Delete:
-        {
-            query.prepare("delete * from LoopTb where id = :id");
-            query.bindValue(":id",obj->Key());
-        }
-            break;
-        default:{return false;}
-        }
+
+        query.prepare("insert into LoopTb(number,name,controller_id) values(:number,:name,:controller_id)");
+        query.bindValue(":number",obj->ID());
+        query.bindValue(":name",obj->Name());
+        query.bindValue(":controller_id",obj->Parent()->ID());
 
         if(!query.exec())return false;
+
+        foreach(CrtObject* item,static_cast<CrtLoop*>(obj)->m_lstDevice)
+            if(!saveEntity(item))return false;
     }
     else if(obj->Type().compare("building"))
     {
         QSqlQuery query;
-        switch(obj->Status())
-        {
-        case New:
-        {
-            query.prepare("insert into BuildingTb(number,name,project_id) values(:number,:name,:proj_id)");
-            query.bindValue(":number",obj->ID());
-            query.bindValue(":name",obj->Name());
-            query.bindValue(":proj_id",obj->Parent()->ID());
-        }
-            break;
-        case Modify:
-        {
-            query.prepare("update BuildingTb set number = :number,name = :name,project_id = :proj_id where id = :id");
-            query.bindValue(":number",obj->ID());
-            query.bindValue(":name",obj->Name());
-            query.bindValue(":proj_id",obj->Parent()->ID());
-            query.bindValue(":id",obj->Key());
-        }
-            break;
-        case Delete:
-        {
-            query.prepare("delete * from BuildingTb where id = :id");
-            query.bindValue(":id",obj->Key());
-        }
-            break;
-        default:{return false;}
-        }
+
+        query.prepare("insert into BuildingTb(number,name,project_id) values(:number,:name,:proj_id)");
+        query.bindValue(":number",obj->ID());
+        query.bindValue(":name",obj->Name());
+        query.bindValue(":proj_id",obj->Parent()->ID());
 
         if(!query.exec())return false;
+
+        foreach(CrtObject* item,static_cast<CrtBuilding*>(obj)->m_lstLayer)
+            if(!saveEntity(item))return false;
     }
     else if(obj->Type().compare("layer"))
     {
         QSqlQuery query;
-        switch(obj->Status())
-        {
-        case New:
-        {
-            query.prepare("insert into LayerTb(number,name,building_id) values(:number,:name,:building_id)");
-            query.bindValue(":number",obj->ID());
-            query.bindValue(":name",obj->Name());
-            query.bindValue(":building_id",obj->Parent()->ID());
-        }
-            break;
-        case Modify:
-        {
-            query.prepare("update LayerTb set number = :number,name = :name,building_id = :building_id where id = :id");
-            query.bindValue(":number",obj->ID());
-            query.bindValue(":name",obj->Name());
-            query.bindValue(":building_id",obj->Parent()->ID());
-            query.bindValue(":id",obj->Key());
-        }
-            break;
-        case Delete:
-        {
-            query.prepare("delete * from LayerTb where id = :id");
-            query.bindValue(":id",obj->Key());
-        }
-            break;
-        default:{return false;}
-        }
+
+        query.prepare("insert into LayerTb(number,name,building_id) values(:number,:name,:building_id)");
+        query.bindValue(":number",obj->ID());
+        query.bindValue(":name",obj->Name());
+        query.bindValue(":building_id",obj->Parent()->ID());
 
         if(!query.exec())return false;
     }
     else if(obj->Type().compare("device"))
     {
         QSqlQuery query;
-        switch(obj->Status())
-        {
-        case New:
-        {
-            query.prepare("insert into DeviceTb(number,name,loop_id,layer_id,type,type_name) values(:number,:name,:loop_id,:layer_id,:type,:type_name)");
-            query.bindValue(":number",obj->ID());
-            query.bindValue(":name",obj->Name());
-            query.bindValue(":loop_id",obj->Parent()->ID());
-            //query.bindValue(":layer_id",static_cast<CrtDevice*>(obj)->LayerID());
-            query.bindValue(":type_name",obj->Type());
-            //query.bindValue(":type",//string type to int type);
-        }
-            break;
-        case Modify:
-        {
-            query.prepare("update DeviceTb set number = :number,name = :name,loop_id = :loop_id,layer_id = :layer_id,type = :type,type_name = :type_name where id = :id");
-            query.bindValue(":number",obj->ID());
-            query.bindValue(":name",obj->Name());
-            query.bindValue(":loop_id",obj->Parent()->ID());
-            //query.bindValue(":layer_id",static_cast<CrtDevice*>(obj)->LayerID());
-            query.bindValue(":type_name",obj->Type());
-            //query.bindValue(":type",//string type to int type);
-            query.bindValue(":id",obj->Key());
-        }
-            break;
-        case Delete:
-        {
-            query.prepare("delete * from DeviceTb where id = :id");
-            query.bindValue(":id",obj->Key());
-        }
-            break;
-        default:{return false;}
-        }
+
+        query.prepare("insert into DeviceTb(number,name,loop_id,layer_id,type,type_name) values(:number,:name,:loop_id,:layer_id,:type,:type_name)");
+        query.bindValue(":number",obj->ID());
+        query.bindValue(":name",obj->Name());
+        query.bindValue(":loop_id",obj->Parent()->ID());
+        //query.bindValue(":layer_id",static_cast<CrtDevice*>(obj)->LayerID());
+        query.bindValue(":type_name",obj->Type());
+        //query.bindValue(":type",//string type to int type);
 
         if(!query.exec())return false;
-    }*/
+    }
 }
 
 int EntityManager::getAvaliableNumber(const QString &tableName)
@@ -408,5 +289,20 @@ int EntityManager::getAvaliableDeviceNumber(int loop_id, int controller_id, int 
 
 bool EntityManager::save(CrtProject *proj)
 {
+    if(!engine->IsConnAlive())return false;
+    if(engine->beginTransaction()){
+        if(!engine->ExeNoQuery("delete * from DeviceTb"))goto err;
+        if(!engine->ExeNoQuery("delete * from LayerTb"))goto err;
+        if(!engine->ExeNoQuery("delete * from BuildingTb"))goto err;
+        if(!engine->ExeNoQuery("delete * from LoopTb"))goto err;
+        if(!engine->ExeNoQuery("delete * from ControllerTb"))goto err;
+        if(!engine->ExeNoQuery("delete * from ProjectTb"))goto err;
+
+        if(!saveEntity(proj))goto err;
+
+        return engine->endTransaction();
+        err:
+        engine->rollback();
+    }
     return false;
 }
