@@ -151,3 +151,13 @@ QModelIndex CrtTreeModel::indexFromItem(CrtTreeItem *item)
 
     return QModelIndex();
 }
+
+void CrtTreeModel::unload()
+{
+    if(root)
+    {
+        beginResetModel();
+        SAFE_DELETE(root);
+        endResetModel();
+    }
+}

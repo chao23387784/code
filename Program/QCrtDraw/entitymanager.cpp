@@ -10,13 +10,6 @@ EntityManager::EntityManager()
 
 EntityManager::~EntityManager()
 {  
-    foreach(CrtObject* item,m_lstModifyObjects)
-    {
-        if(item->Status() == Delete)
-            SAFE_DELETE(item);
-    }
-    m_lstModifyObjects.clear();
-
     if(engine->IsConnAlive())
         engine->CloseDatabase();
     SAFE_DELETE(engine);
@@ -163,7 +156,8 @@ void EntityManager::loadEntity(CrtObject *obj)
 
 bool EntityManager::saveEntity(CrtObject *obj)
 {
-    if(!engine->IsConnAlive())return false;
+    return false;
+    /*if(!engine->IsConnAlive())return false;
     if(!obj)return true;
 
     if(obj->Type().compare("project"))
@@ -341,7 +335,7 @@ bool EntityManager::saveEntity(CrtObject *obj)
             query.bindValue(":loop_id",obj->Parent()->ID());
             //query.bindValue(":layer_id",static_cast<CrtDevice*>(obj)->LayerID());
             query.bindValue(":type_name",obj->Type());
-            //query.bindValue(":type",/*string type to int type*/);
+            //query.bindValue(":type",//string type to int type);
         }
             break;
         case Modify:
@@ -352,7 +346,7 @@ bool EntityManager::saveEntity(CrtObject *obj)
             query.bindValue(":loop_id",obj->Parent()->ID());
             //query.bindValue(":layer_id",static_cast<CrtDevice*>(obj)->LayerID());
             query.bindValue(":type_name",obj->Type());
-            //query.bindValue(":type",/*string type to int type*/);
+            //query.bindValue(":type",//string type to int type);
             query.bindValue(":id",obj->Key());
         }
             break;
@@ -366,7 +360,7 @@ bool EntityManager::saveEntity(CrtObject *obj)
         }
 
         if(!query.exec())return false;
-    }
+    }*/
 }
 
 int EntityManager::getAvaliableNumber(const QString &tableName)
@@ -411,48 +405,8 @@ int EntityManager::getAvaliableDeviceNumber(int loop_id, int controller_id, int 
     return -1;
 }
 
-void EntityManager::addModifyEntity(CrtObject *obj, int type)
-{
-    switch(type)
-    {
-    case New:
-    {
-
-    }
-        break;
-    case Modify:
-    {
-
-    }
-        break;
-    case Delete:
-    {
-
-    }
-        break;
-    default:{}
-    }
-}
-
 
 bool EntityManager::save(CrtProject *proj)
 {
-    if(proj && engine->IsConnAlive())
-    {
-        if(engine->beginTransaction())
-        {
-            foreach(CrtObject* obj,m_lstModifyObjects)
-            {
-                if(!saveEntity(obj))
-                {
-                    engine->rollback();
-                    return false;
-                }
-            }
-
-            return engine->endTransaction();
-        }
-    }
-
     return false;
 }

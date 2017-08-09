@@ -20,6 +20,7 @@ public:
     void InsertItem(CrtTreeItem* item,const QModelIndex &parent);
     void DeleteItem(const QModelIndex &index);
     QModelIndex indexFromItem(CrtTreeItem* item);
+    void unload();
 private:
     CrtTreeItem* root;
 };

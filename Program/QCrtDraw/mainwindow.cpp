@@ -108,9 +108,6 @@ void MainWindow::InitUi()
     treeMapModel = new CrtTreeModel(this);
     treeMap->setModel(treeMapModel);
 
-
-    CrtMaster::GetInstance()->setManager(new EntityManager());
-
     treePanel->setWidget(tabTree);
     treePanel->setWindowTitle(tr("Solution"));
 
@@ -187,8 +184,6 @@ void MainWindow::loadProject(QString path)
 
     CrtMaster::GetInstance()->setProject(new CrtProject());
     CrtMaster::GetInstance()->Manager()->load(CrtMaster::GetInstance()->Project());
-
-    InitModel();
 }
 
 void MainWindow::OnOpenProject()
@@ -207,21 +202,24 @@ void MainWindow::OnOpenProject()
         QMessageBox::information(this,tr("warning"),tr("close current project first"));
         return;
     }
-
+    CrtMaster::GetInstance()->setManager(new EntityManager());
     loadProject(path);
+    InitModel();
 }
 
 void MainWindow::OnCreateProject()
 {
-    if(!CrtMaster::GetInstance()->Project())
+    if(CrtMaster::GetInstance()->Project())
     {
         QMessageBox::information(this,tr("warning"),tr("close current project first!"));
         return;
     }
+    CrtMaster::GetInstance()->setManager(new EntityManager());
     CrtProject* proj = new CrtProject();
     proj->setID(/*getid*/0);
     proj->setName("project1");
     CrtMaster::GetInstance()->setProject(proj);
+    InitModel();
 }
 
 void MainWindow::OnSaveProject()
@@ -250,8 +248,10 @@ void MainWindow::OnSaveProject()
 void MainWindow::OnCloseProject()
 {
     if(!CrtMaster::GetInstance()->Project())return;
-    //model clear
-    //entity clear
+    treeMapModel->unload();
+    treeProjectModel->unload();
+    CrtMaster::GetInstance()->setProject(NULL);
+    CrtMaster::GetInstance()->setManager(NULL);
 }
 
 void MainWindow::OnViewTransform()
@@ -279,10 +279,7 @@ void MainWindow::OnAddController()
     //this id is not correct
     controller->setID(CrtMaster::GetInstance()->Manager()->getAvaliableNumber("ControllerTb"));
     controller->setName(tr("NT-Controller"));
-    controller->setStauts(New);
     CrtMaster::GetInstance()->Project()->m_lstController.append(controller);
-    CrtMaster::GetInstance()->Manager()->addModifyEntity(controller,New);
-    //CrtMaster::GetInstance()->Project()->m_lstModifyObjects.append(controller);
 
     CrtTreeItem* item = new CrtTreeItem();
     item->setData(controller);
@@ -294,12 +291,6 @@ void MainWindow::OnAddController()
 
 void MainWindow::OnDeleteController()
 {
-    //get modelindex
-    //modelindex to modelitem
-    //get controller from modelitem
-    //delete controller
-    //add controller to deleteobject
-    //delete modelitem
     QModelIndex index = treeProject->currentIndex();
     if(!index.isValid())return;
     CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
@@ -309,12 +300,11 @@ void MainWindow::OnDeleteController()
 
     treeProjectModel->DeleteItem(index);
 
-    treeProject->setCurrentIndex(QModelIndex());
+    treeProject->expandItem(index);
+    treeProject->setCurrentIndex(index);
 
     proj->m_lstController.removeOne(controller);
-    controller->setStauts(Delete);
-    //proj->m_lstModifyObjects.append(controller);
-    CrtMaster::GetInstance()->Manager()->addModifyEntity(controller,Delete);
+    SAFE_DELETE(controller);
 }
 
 void MainWindow::OnAddLoop()
@@ -329,10 +319,7 @@ void MainWindow::OnAddLoop()
         //this id is not correct
         loop->setID(CrtMaster::GetInstance()->Manager()->getAvaliableNumber("LoopTb"));
         loop->setName(tr("NT-Loop"));
-        loop->setStauts(New);
         controller->m_lstLoop.append(loop);
-        CrtMaster::GetInstance()->Manager()->addModifyEntity(loop,New);
-        //CrtMaster::GetInstance()->Project()->m_lstModifyObjects.append(loop);
 
         CrtTreeItem* item = new CrtTreeItem();
         item->setData(loop);
@@ -345,27 +332,95 @@ void MainWindow::OnAddLoop()
 
 void MainWindow::OnDeleteLoop()
 {
+    QModelIndex index = treeProject->currentIndex();
+    if(!index.isValid())return;
+    CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
+    if(!item)return;
+    CrtLoop* loop = (CrtLoop*)item->Data();
+    CrtController* controller = (CrtController*)loop->Parent();
 
+    treeProjectModel->DeleteItem(index);
+
+    treeProject->setCurrentIndex(QModelIndex());
+
+    controller->m_lstLoop.removeOne(loop);
+    SAFE_DELETE(loop);
 }
 
 void MainWindow::OnAddBuilding()
 {
+    QModelIndex index = treeMap->currentIndex();
+    if(!index.isValid())return;
 
+    CrtBuilding* building = new CrtBuilding(CrtMaster::GetInstance()->Project());
+    //this id is not correct
+    building->setID(CrtMaster::GetInstance()->Manager()->getAvaliableNumber("BuildingTb"));
+    building->setName(tr("NT-Building"));
+    CrtMaster::GetInstance()->Project()->m_lstBuilding.append(building);
+
+    CrtTreeItem* item = new CrtTreeItem();
+    item->setData(building);
+    treeMapModel->InsertItem(item,index);
+
+    treeMap->expandItem(index);
+    treeMap->setCurrentIndex(index);
 }
 
 void MainWindow::OnDeleteBuilding()
 {
+    QModelIndex index = treeMap->currentIndex();
+    if(!index.isValid())return;
+    CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
+    if(!item)return;
+    CrtBuilding* building = (CrtBuilding*)item->Data();
+    CrtProject* proj = (CrtProject*)building->Parent();
 
+    treeMapModel->DeleteItem(index);
+
+    treeMap->setCurrentIndex(QModelIndex());
+
+    proj->m_lstBuilding.removeOne(building);
+    SAFE_DELETE(building);
 }
 
 void MainWindow::OnAddLayer()
 {
+    QModelIndex index = treeMap->currentIndex();
+    if(!index.isValid())return;
+    CrtTreeItem* parent = (CrtTreeItem*)index.internalPointer();
+    CrtBuilding* building = (CrtBuilding*)parent->Data();
+    if(building)
+    {
+        CrtLayer* layer = new CrtLayer(building);
+        //this id is not correct
+        layer->setID(CrtMaster::GetInstance()->Manager()->getAvaliableNumber("LayerTb"));
+        layer->setName(tr("NT-Layer"));
+        building->m_lstLayer.append(layer);
 
+        CrtTreeItem* item = new CrtTreeItem();
+        item->setData(layer);
+        treeMapModel->InsertItem(item,index);
+
+        treeMap->expandItem(index);
+        treeMap->setCurrentIndex(index);
+    }
 }
 
 void MainWindow::OnDeleteLayer()
 {
+    QModelIndex index = treeMap->currentIndex();
+    if(!index.isValid())return;
+    CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
+    if(!item)return;
+    CrtLayer* layer = (CrtLayer*)item->Data();
+    CrtBuilding* building = (CrtBuilding*)layer->Parent();
 
+    treeMapModel->DeleteItem(index);
+
+    treeMap->setCurrentIndex(QModelIndex());
+
+    building->m_lstLayer.removeOne(layer);
+    SAFE_DELETE(layer);
 }
 
 void MainWindow::OnSetBackImage()
