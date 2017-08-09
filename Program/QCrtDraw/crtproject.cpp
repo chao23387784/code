@@ -19,11 +19,4 @@ CrtProject::~CrtProject()
         SAFE_DELETE(item);
     }
     m_lstController.clear();
-
-    foreach(CrtObject* item,m_lstModifyObjects)
-    {
-        if(item->Status() == Delete)
-            SAFE_DELETE(item);
-    }
-    m_lstModifyObjects.clear();
 }

@@ -24,6 +24,12 @@ CrtTreeItem::~CrtTreeItem()
     }
 }
 
+int CrtTreeItem::Row()
+{
+    if(!parent)return 0;
+    return parent->indexOf(this);
+}
+
 void CrtTreeItem::addChild(CrtTreeItem *child)
 {
     children.append(child);
@@ -68,8 +74,6 @@ void CrtTreeItem::load(CrtObject *obj, int type)
                     CrtTreeItem* item = new CrtTreeItem();
                     item->setParent(this);
                     item->setData(root->m_lstController[i]);
-                    item->setRow(i);
-                    item->setColumn(0);
                     addChild(item);
                     item->load(item->Data(),type);
                 }
@@ -82,8 +86,6 @@ void CrtTreeItem::load(CrtObject *obj, int type)
                     CrtTreeItem* item = new CrtTreeItem();
                     item->setParent(this);
                     item->setData(root->m_lstLoop[i]);
-                    item->setRow(i);
-                    item->setColumn(0);
                     addChild(item);
                     item->load(item->Data(),type);
                 }
@@ -96,8 +98,6 @@ void CrtTreeItem::load(CrtObject *obj, int type)
                     CrtTreeItem* item = new CrtTreeItem();
                     item->setParent(this);
                     item->setData(root->m_lstDevice[i]);
-                    item->setRow(i);
-                    item->setColumn(0);
                     addChild(item);
                 }
             }
@@ -112,8 +112,6 @@ void CrtTreeItem::load(CrtObject *obj, int type)
                     CrtTreeItem* item = new CrtTreeItem();
                     item->setParent(this);
                     item->setData(root->m_lstBuilding[i]);
-                    item->setRow(i);
-                    item->setColumn(0);
                     addChild(item);
                     item->load(item->Data(),type);
                 }
@@ -126,8 +124,6 @@ void CrtTreeItem::load(CrtObject *obj, int type)
                     CrtTreeItem* item = new CrtTreeItem();
                     item->setParent(this);
                     item->setData(root->m_lstLayer[i]);
-                    item->setRow(i);
-                    item->setColumn(0);
                     addChild(item);
                 }
             }
@@ -139,8 +135,6 @@ void CrtTreeItem::load(CrtObject *obj, int type)
                     CrtTreeItem* item = new CrtTreeItem();
                     item->setParent(this);
                     item->setData(root->m_lstDevice[i]);
-                    item->setRow(i);
-                    item->setColumn(0);
                     addChild(item);
                 }
             }

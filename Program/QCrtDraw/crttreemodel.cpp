@@ -85,15 +85,13 @@ bool CrtTreeModel::load(CrtProject *proj, int type)
 {
     if(proj != NULL)
     {
+        beginResetModel();
         SAFE_DELETE(root);
         root = new CrtTreeItem();
         root->setParent(NULL);
-        root->setColumn(0);
-        root->setRow(1);
         root->setData(proj);
         root->load(proj,type);
-        //update view
-        reset();
+        endResetModel();
         return true;
     }
     return false;
@@ -102,4 +100,54 @@ bool CrtTreeModel::load(CrtProject *proj, int type)
 CrtProject *CrtTreeModel::save(int type)
 {
     return NULL;
+}
+
+void CrtTreeModel::InsertItem(CrtTreeItem *item, const QModelIndex &parent)
+{
+    if(parent.isValid())
+    {
+        beginResetModel();
+        CrtTreeItem* parentItem = (CrtTreeItem*)parent.internalPointer();
+        parentItem->addChild(item);
+        item->setParent(parentItem);
+        endResetModel();
+    }
+    else//add project
+    {
+
+    }
+}
+
+void CrtTreeModel::DeleteItem(const QModelIndex &index)
+{
+    if(index.isValid())
+    {
+        beginResetModel();
+        CrtTreeItem *item = (CrtTreeItem*)index.internalPointer();
+        CrtTreeItem *parent = item->Parent();
+        if(parent)
+        {
+            parent->removeChild(item->Row());
+        }
+        else//delete project
+        {
+            SAFE_DELETE(root);
+        }
+        endResetModel();
+    }
+}
+
+QModelIndex CrtTreeModel::indexFromItem(CrtTreeItem *item)
+{
+    CrtTreeItem* parent = item->Parent();
+    if(!parent)
+    {
+        return item == root ? createIndex(0,0,root) : QModelIndex();
+    }
+    else
+    {
+        return createIndex(item->Row(),0,item);
+    }
+
+    return QModelIndex();
 }

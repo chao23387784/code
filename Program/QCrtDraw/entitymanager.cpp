@@ -9,7 +9,14 @@ EntityManager::EntityManager()
 }
 
 EntityManager::~EntityManager()
-{
+{  
+    foreach(CrtObject* item,m_lstModifyObjects)
+    {
+        if(item->Status() == Delete)
+            SAFE_DELETE(item);
+    }
+    m_lstModifyObjects.clear();
+
     if(engine->IsConnAlive())
         engine->CloseDatabase();
     SAFE_DELETE(engine);
@@ -404,6 +411,29 @@ int EntityManager::getAvaliableDeviceNumber(int loop_id, int controller_id, int 
     return -1;
 }
 
+void EntityManager::addModifyEntity(CrtObject *obj, int type)
+{
+    switch(type)
+    {
+    case New:
+    {
+
+    }
+        break;
+    case Modify:
+    {
+
+    }
+        break;
+    case Delete:
+    {
+
+    }
+        break;
+    default:{}
+    }
+}
+
 
 bool EntityManager::save(CrtProject *proj)
 {
@@ -411,7 +441,7 @@ bool EntityManager::save(CrtProject *proj)
     {
         if(engine->beginTransaction())
         {
-            foreach(CrtObject* obj,proj->m_lstModifyObjects)
+            foreach(CrtObject* obj,m_lstModifyObjects)
             {
                 if(!saveEntity(obj))
                 {

@@ -10,6 +10,7 @@
 #include "crtbackground.h"
 #include <QComboBox>
 #include "crttreemodel.h"
+#include "crttreeview.h"
 
 class MainWindow : public QMainWindow
 {
@@ -45,8 +46,8 @@ public slots:
 protected:
     void closeEvent(QCloseEvent *);
 private:
-    QTreeView* treeProject;
-    QTreeView* treeMap;
+    CrtTreeView* treeProject;
+    CrtTreeView* treeMap;
     CrtTreeModel* treeProjectModel;
     CrtTreeModel* treeMapModel;
 	QTableWidget* tbProp;

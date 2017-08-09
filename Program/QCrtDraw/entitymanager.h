@@ -8,6 +8,14 @@
 #include "crtlayer.h"
 #include "crtdevice.h"
 #include "sqliteengine.h"
+#include <QList>
+
+enum DataStatus{
+    New,
+    Modify,
+    Delete,
+    Invalid
+};
 
 class EntityManager
 {
@@ -23,9 +31,11 @@ public:
     int getAvaliableBuildingNumber(int proj_id);
     int getAvaliableLayerNumber(int building_id,int proj_id);
     int getAvaliableDeviceNumber(int loop_id,int controller_id,int proj_id);
+    void addModifyEntity(CrtObject* obj,int type);
 private:
     void loadEntity(CrtObject* obj);
     bool saveEntity(CrtObject* obj);
+    QList<CrtObject*> m_lstModifyObjects;
 private:
     SqliteEngine* engine;
 };

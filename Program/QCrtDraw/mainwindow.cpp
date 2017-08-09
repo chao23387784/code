@@ -97,12 +97,12 @@ void MainWindow::InitUi()
 
     QTabWidget* tabTree = new QTabWidget(this);
 
-    treeProject = new QTreeView(this);
+    treeProject = new CrtTreeView(this);
     tabTree->addTab(treeProject,tr("Project"));
-    treeMap = new QTreeView(this);
+    treeMap = new CrtTreeView(this);
     tabTree->addTab(treeMap,tr("Map"));
 
-    CrtMaster::GetInstance()->setProject(new CrtProject());
+    //CrtMaster::GetInstance()->setProject(new CrtProject());
     treeProjectModel = new CrtTreeModel(this);
     treeProject->setModel(treeProjectModel);
     treeMapModel = new CrtTreeModel(this);
@@ -202,6 +202,12 @@ void MainWindow::OnOpenProject()
         return;
     }
 
+    if(CrtMaster::GetInstance()->Project())
+    {
+        QMessageBox::information(this,tr("warning"),tr("close current project first"));
+        return;
+    }
+
     loadProject(path);
 }
 
@@ -268,50 +274,47 @@ void MainWindow::OnAddController()
 {
     QModelIndex index = treeProject->currentIndex();
     if(!index.isValid())return;
-    CrtTreeItem* parent = (CrtTreeItem*)index.internalPointer();
-    CrtProject* proj = (CrtProject*)parent->Data();
-    if(parent && proj)
-    {
-        CrtController* controller = new CrtController(proj);
-        //this id is not correct
-        controller->setID(CrtMaster::GetInstance()->Manager()->getAvaliableNumber("ControllerTb"));
-        controller->setName(tr("NT-Controller"));
-        controller->setStauts(New);
-        proj->m_lstController.append(controller);
 
-        CrtTreeItem* item = new CrtTreeItem();
-        item->setParent(parent);
-        item->setData(controller);
-        item->setColumn(0);
-        parent->addChild(item);
-        item->setRow(parent->indexOf(item));
+    CrtController* controller = new CrtController(CrtMaster::GetInstance()->Project());
+    //this id is not correct
+    controller->setID(CrtMaster::GetInstance()->Manager()->getAvaliableNumber("ControllerTb"));
+    controller->setName(tr("NT-Controller"));
+    controller->setStauts(New);
+    CrtMaster::GetInstance()->Project()->m_lstController.append(controller);
+    CrtMaster::GetInstance()->Manager()->addModifyEntity(controller,New);
+    //CrtMaster::GetInstance()->Project()->m_lstModifyObjects.append(controller);
 
-        treeProjectModel->reset();
-        treeProject->expand(index);
-        treeProject->setCurrentIndex(index);
+    CrtTreeItem* item = new CrtTreeItem();
+    item->setData(controller);
+    treeProjectModel->InsertItem(item,index);
 
-        proj->m_lstModifyObjects.append(controller);
-    }
+    treeProject->expandItem(index);
+    treeProject->setCurrentIndex(index);
 }
 
 void MainWindow::OnDeleteController()
 {
+    //get modelindex
+    //modelindex to modelitem
+    //get controller from modelitem
+    //delete controller
+    //add controller to deleteobject
+    //delete modelitem
     QModelIndex index = treeProject->currentIndex();
     if(!index.isValid())return;
     CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
     if(!item)return;
     CrtController* controller = (CrtController*)item->Data();
     CrtProject* proj = (CrtProject*)controller->Parent();
-    CrtTreeItem* parent = item->Parent();
-    if(!parent)return;
-    parent->removeChild(parent->indexOf(item));
 
-    treeProjectModel->reset();
+    treeProjectModel->DeleteItem(index);
+
     treeProject->setCurrentIndex(QModelIndex());
 
     proj->m_lstController.removeOne(controller);
     controller->setStauts(Delete);
-    proj->m_lstModifyObjects.append(controller);
+    //proj->m_lstModifyObjects.append(controller);
+    CrtMaster::GetInstance()->Manager()->addModifyEntity(controller,Delete);
 }
 
 void MainWindow::OnAddLoop()
@@ -320,7 +323,7 @@ void MainWindow::OnAddLoop()
     if(!index.isValid())return;
     CrtTreeItem* parent = (CrtTreeItem*)index.internalPointer();
     CrtController* controller = (CrtController*)parent->Data();
-    if(parent && controller)
+    if(controller)
     {
         CrtLoop* loop = new CrtLoop(controller);
         //this id is not correct
@@ -328,19 +331,15 @@ void MainWindow::OnAddLoop()
         loop->setName(tr("NT-Loop"));
         loop->setStauts(New);
         controller->m_lstLoop.append(loop);
+        CrtMaster::GetInstance()->Manager()->addModifyEntity(loop,New);
+        //CrtMaster::GetInstance()->Project()->m_lstModifyObjects.append(loop);
 
         CrtTreeItem* item = new CrtTreeItem();
-        item->setParent(parent);
         item->setData(loop);
-        item->setColumn(0);
-        parent->addChild(item);
-        item->setRow(parent->indexOf(item));
+        treeProjectModel->InsertItem(item,index);
 
-        treeProjectModel->reset();
-        treeProject->expand(index);
+        treeProject->expandItem(index);
         treeProject->setCurrentIndex(index);
-
-        CrtMaster::GetInstance()->Project()->m_lstModifyObjects.append(loop);
     }
 }
 

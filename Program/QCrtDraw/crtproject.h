@@ -6,12 +6,6 @@
 #include "crtbuilding.h"
 #include "crtobject.h"
 
-enum DataStatus{
-    New,
-    Modify,
-    Delete
-};
-
 class CrtProject : public CrtObject
 {
 public:
@@ -20,7 +14,6 @@ public:
 public:
     QList<CrtController*> m_lstController;
     QList<CrtBuilding*> m_lstBuilding;
-    QList<CrtObject*> m_lstModifyObjects;
 };
 
 #endif // CRTPROJECT_H

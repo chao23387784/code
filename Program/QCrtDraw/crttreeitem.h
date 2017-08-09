@@ -8,10 +8,8 @@ class CrtTreeItem
 public:
     CrtTreeItem();
     ~CrtTreeItem();
-    void setColumn(int col){column = col;}
-    int Column(){return column;}
-    void setRow(int row){this->row = row;}
-    int Row(){return row;}
+    int Column(){return 0;}
+    int Row();
     void setParent(CrtTreeItem* parent){this->parent = parent;}
     CrtTreeItem* Parent(){return parent;}
     void addChild(CrtTreeItem* child);
@@ -23,8 +21,6 @@ public:
     CrtObject* Data(){return data;}
     void load(CrtObject* obj,int type = 0);
 private:
-    int column;
-    int row;
     CrtTreeItem* parent;
     QList<CrtTreeItem*> children;
     CrtObject* data;

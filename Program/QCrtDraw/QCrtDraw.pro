@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     crtobject.cpp \
     crttreemodel.cpp \
     crttreeitem.cpp \
-    entitymanager.cpp
+    entitymanager.cpp \
+    crttreeview.cpp
 
 HEADERS  += mainwindow.h \
     sqliteengine.h \
@@ -60,7 +61,8 @@ HEADERS  += mainwindow.h \
     crttreemodel.h \
     crttreeitem.h \
     common.h \
-    entitymanager.h
+    entitymanager.h \
+    crttreeview.h
 
 DISTFILES +=
 
