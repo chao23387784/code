@@ -17,10 +17,10 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     bool load(CrtProject* proj,int type = 0);//0 project,1 map;
     CrtProject* save(int type = 0);
-    //void reset(){beginResetModel();endResetModel();}
-    void InsertItem(CrtTreeItem* item,const QModelIndex &parent);
-    void DeleteItem(const QModelIndex &index);
+    void insertItem(CrtTreeItem* item,const QModelIndex &parent);
+    void deleteItem(const QModelIndex &index);
     QModelIndex indexFromItem(CrtTreeItem* item);
+    QModelIndex getAvaliableBrotherIndex(QModelIndex index);
     void unload();
 private:
     CrtTreeItem* root;

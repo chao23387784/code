@@ -12,6 +12,7 @@
 #include "crtmaster.h"
 #include "entitymanager.h"
 #include "common.h"
+#include <QStyledItemDelegate>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -29,7 +30,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::InitUi()
 {
-	QToolBar* toolBar = new QToolBar(this);
+    QToolBar* toolBar = new QToolBar(this);
 
     btnCreateProj = new QAction(QIcon(":/img/new.png"),tr("Create Project"),this);
     toolBar->addAction(btnCreateProj);
@@ -91,7 +92,8 @@ void MainWindow::InitUi()
         }
     }
 
-    //toolBar->addWidget(cmbDevList);
+    actDevList = toolBar->addWidget(cmbDevList);
+
     addToolBar(toolBar);
 
     UpdateToolbarState(0);
@@ -100,9 +102,12 @@ void MainWindow::InitUi()
     treePanel->setFeatures(QDockWidget::DockWidgetMovable);
     treePanel->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-    QTabWidget* tabTree = new QTabWidget(this);
+    tabTree = new QTabWidget(this);
 
     treeProject = new CrtTreeView(this);
+    //treeProject->setItemDelegate(new QStyledItemDelegate());
+    //treeProject->setExpandsOnDoubleClick(false);
+    //treeProject->setEditTriggers(QAbstractItemView::DoubleClicked);
     tabTree->addTab(treeProject,tr("Project"));
     treeMap = new CrtTreeView(this);
     tabTree->addTab(treeMap,tr("Map"));
@@ -142,6 +147,7 @@ void MainWindow::InitUi()
 
 void MainWindow::InitConnect()
 {
+    connect(tabTree,SIGNAL(currentChanged(int)),this,SLOT(OnTabChanged(int)));
     connect(btnCreateProj,SIGNAL(triggered(bool)),this,SLOT(OnCreateProject()));
     connect(btnOpenProj,SIGNAL(triggered(bool)),this,SLOT(OnOpenProject()));
     connect(btnSaveProj,SIGNAL(triggered(bool)),this,SLOT(OnSaveProject()));
@@ -222,6 +228,7 @@ void MainWindow::OnCreateProject()
         return;
     }
     CrtMaster::GetInstance()->setManager(new EntityManager());
+    CrtMaster::GetInstance()->Manager()->InitEngine();
     CrtProject* proj = new CrtProject();
     proj->setID(/*getid*/0);
     proj->setName("project1");
@@ -231,14 +238,20 @@ void MainWindow::OnCreateProject()
 
 void MainWindow::OnSaveProject()
 {
-    QString path = QFileDialog::getSaveFileName(this, tr("Save Project File"),
+    if(!CrtMaster::GetInstance()->Project())
+    {
+        QMessageBox::information(this,tr("warning"),tr("no project!"));
+        return;
+    }
+
+    /*QString path = QFileDialog::getSaveFileName(this, tr("Save Project File"),
                                                 QDir::currentPath(),
                                                 tr("SQLite Database File (*.db)"));
     if(QFileInfo(path).exists())
     {
         QMessageBox::information(this,tr("warning"),tr("file exists!"));
         return;
-    }
+    }*/
 
     if(!CrtMaster::GetInstance()->Manager()->save(CrtMaster::GetInstance()->Project()))
     {
@@ -282,18 +295,21 @@ void MainWindow::OnAddController()
     QModelIndex index = treeProject->currentIndex();
     if(!index.isValid())return;
 
+    int id = CrtMaster::GetInstance()->Project()->getAvaliableControllerID();
+    if(id == -1)
+    {
+        QMessageBox::information(this,tr("warning"),tr("Upper limit reached!"));
+        return;
+    }
     CrtController* controller = new CrtController(CrtMaster::GetInstance()->Project());
     //this id is not correct
-    controller->setID(CrtMaster::GetInstance()->Manager()->getAvaliableNumber("ControllerTb"));
-    controller->setName(tr("NT-Controller"));
+    controller->setID(id);
+    controller->setName(QString(tr("NT-Controller%1")).arg(id));
     CrtMaster::GetInstance()->Project()->m_lstController.append(controller);
-
     CrtTreeItem* item = new CrtTreeItem();
     item->setData(controller);
-    treeProjectModel->InsertItem(item,index);
 
-    treeProject->expandItem(index);
-    treeProject->setCurrentIndex(index);
+    treeProject->insertItem(item,index);
 }
 
 void MainWindow::OnDeleteController()
@@ -301,14 +317,10 @@ void MainWindow::OnDeleteController()
     QModelIndex index = treeProject->currentIndex();
     if(!index.isValid())return;
     CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
-    if(!item)return;
     CrtController* controller = (CrtController*)item->Data();
     CrtProject* proj = (CrtProject*)controller->Parent();
 
-    treeProjectModel->DeleteItem(index);
-
-    treeProject->expandItem(index);
-    treeProject->setCurrentIndex(index);
+    treeProject->deleteItem(index);
 
     proj->m_lstController.removeOne(controller);
     SAFE_DELETE(controller);
@@ -318,23 +330,27 @@ void MainWindow::OnAddLoop()
 {
     QModelIndex index = treeProject->currentIndex();
     if(!index.isValid())return;
+
     CrtTreeItem* parent = (CrtTreeItem*)index.internalPointer();
     CrtController* controller = (CrtController*)parent->Data();
-    if(controller)
+
+    int id = controller->getAvaliableLoopID();
+    if(id == -1)
     {
-        CrtLoop* loop = new CrtLoop(controller);
-        //this id is not correct
-        loop->setID(CrtMaster::GetInstance()->Manager()->getAvaliableNumber("LoopTb"));
-        loop->setName(tr("NT-Loop"));
-        controller->m_lstLoop.append(loop);
-
-        CrtTreeItem* item = new CrtTreeItem();
-        item->setData(loop);
-        treeProjectModel->InsertItem(item,index);
-
-        treeProject->expandItem(index);
-        treeProject->setCurrentIndex(index);
+        QMessageBox::information(this,tr("warning"),tr("Upper limit reached!"));
+        return;
     }
+
+    CrtLoop* loop = new CrtLoop(controller);
+    //this id is not correct
+    loop->setID(id);
+    loop->setName(QString(tr("NT-Loop%1")).arg(id));
+    controller->m_lstLoop.append(loop);
+
+    CrtTreeItem* item = new CrtTreeItem();
+    item->setData(loop);
+
+    treeProject->insertItem(item,index);
 }
 
 void MainWindow::OnDeleteLoop()
@@ -342,13 +358,10 @@ void MainWindow::OnDeleteLoop()
     QModelIndex index = treeProject->currentIndex();
     if(!index.isValid())return;
     CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
-    if(!item)return;
     CrtLoop* loop = (CrtLoop*)item->Data();
     CrtController* controller = (CrtController*)loop->Parent();
 
-    treeProjectModel->DeleteItem(index);
-
-    treeProject->setCurrentIndex(QModelIndex());
+    treeProject->deleteItem(index);
 
     controller->m_lstLoop.removeOne(loop);
     SAFE_DELETE(loop);
@@ -356,12 +369,43 @@ void MainWindow::OnDeleteLoop()
 
 void MainWindow::OnAddDevice()
 {
+    QModelIndex index = treeProject->currentIndex();
+    if(!index.isValid())return;
+    CrtTreeItem* parent = (CrtTreeItem*)index.internalPointer();
+    CrtLoop* loop = (CrtLoop*)parent->Data();
 
+    int id = loop->getAvaliableDeviceID();
+    if(id == -1)
+    {
+        QMessageBox::information(this,tr("warning"),tr("Upper limit reached!"));
+        return;
+    }
+
+    CrtDevice* device = new CrtDevice(loop);
+    //this id is not correct
+    device->setID(id);
+    device->setName(QString(tr("NT-Device%1")).arg(id));
+    device->setDeviceType(cmbDevList->currentText());
+    loop->m_lstDevice.append(device);
+
+    CrtTreeItem* item = new CrtTreeItem();
+    item->setData(device);
+
+    treeProject->insertItem(item,index);
 }
 
 void MainWindow::OnDeleteDevice()
 {
+    QModelIndex index = treeProject->currentIndex();
+    if(!index.isValid())return;
+    CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
+    CrtDevice* device = (CrtDevice*)item->Data();
+    CrtLoop* loop = (CrtLoop*)device->Parent();
 
+    treeProject->deleteItem(index);
+
+    loop->m_lstDevice.removeOne(device);
+    SAFE_DELETE(device);
 }
 
 void MainWindow::OnAddBuilding()
@@ -369,18 +413,23 @@ void MainWindow::OnAddBuilding()
     QModelIndex index = treeMap->currentIndex();
     if(!index.isValid())return;
 
+    int id = CrtMaster::GetInstance()->Project()->getAvaliableBuildingID();
+    if(id == -1)
+    {
+        QMessageBox::information(this,tr("warning"),tr("Upper limit reached!"));
+        return;
+    }
+
     CrtBuilding* building = new CrtBuilding(CrtMaster::GetInstance()->Project());
     //this id is not correct
-    building->setID(CrtMaster::GetInstance()->Manager()->getAvaliableNumber("BuildingTb"));
-    building->setName(tr("NT-Building"));
+    building->setID(id);
+    building->setName(QString(tr("NT-Building%1")).arg(id));
     CrtMaster::GetInstance()->Project()->m_lstBuilding.append(building);
 
     CrtTreeItem* item = new CrtTreeItem();
     item->setData(building);
-    treeMapModel->InsertItem(item,index);
 
-    treeMap->expandItem(index);
-    treeMap->setCurrentIndex(index);
+    treeMap->insertItem(item,index);
 }
 
 void MainWindow::OnDeleteBuilding()
@@ -388,13 +437,10 @@ void MainWindow::OnDeleteBuilding()
     QModelIndex index = treeMap->currentIndex();
     if(!index.isValid())return;
     CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
-    if(!item)return;
     CrtBuilding* building = (CrtBuilding*)item->Data();
     CrtProject* proj = (CrtProject*)building->Parent();
 
-    treeMapModel->DeleteItem(index);
-
-    treeMap->setCurrentIndex(QModelIndex());
+    treeMap->deleteItem(index);
 
     proj->m_lstBuilding.removeOne(building);
     SAFE_DELETE(building);
@@ -406,21 +452,23 @@ void MainWindow::OnAddLayer()
     if(!index.isValid())return;
     CrtTreeItem* parent = (CrtTreeItem*)index.internalPointer();
     CrtBuilding* building = (CrtBuilding*)parent->Data();
-    if(building)
+
+    int id = building->getAvaliableLayerID();
+    if(id == -1)
     {
-        CrtLayer* layer = new CrtLayer(building);
-        //this id is not correct
-        layer->setID(CrtMaster::GetInstance()->Manager()->getAvaliableNumber("LayerTb"));
-        layer->setName(tr("NT-Layer"));
-        building->m_lstLayer.append(layer);
-
-        CrtTreeItem* item = new CrtTreeItem();
-        item->setData(layer);
-        treeMapModel->InsertItem(item,index);
-
-        treeMap->expandItem(index);
-        treeMap->setCurrentIndex(index);
+        QMessageBox::information(this,tr("warning"),tr("Upper limit reached!"));
+        return;
     }
+
+    CrtLayer* layer = new CrtLayer(building);
+    //this id is not correct
+    layer->setID(id);
+    layer->setName(QString(tr("NT-Layer%1")).arg(id));
+    building->m_lstLayer.append(layer);
+
+    CrtTreeItem* item = new CrtTreeItem();
+    item->setData(layer);
+    treeMap->insertItem(item,index);
 }
 
 void MainWindow::OnDeleteLayer()
@@ -428,13 +476,10 @@ void MainWindow::OnDeleteLayer()
     QModelIndex index = treeMap->currentIndex();
     if(!index.isValid())return;
     CrtTreeItem* item = (CrtTreeItem*)index.internalPointer();
-    if(!item)return;
     CrtLayer* layer = (CrtLayer*)item->Data();
     CrtBuilding* building = (CrtBuilding*)layer->Parent();
 
-    treeMapModel->DeleteItem(index);
-
-    treeMap->setCurrentIndex(QModelIndex());
+    treeMap->deleteItem(index);
 
     building->m_lstLayer.removeOne(layer);
     SAFE_DELETE(layer);
@@ -469,7 +514,7 @@ void MainWindow::OnProjectItemChanged()
             emit UpdateToolbarState(2);
         else if(!item->Data()->Type().compare("loop"))
             emit UpdateToolbarState(6);
-        else if(item->Data()->Type().compare("device"))
+        else if(!item->Data()->Type().compare("device"))
             emit UpdateToolbarState(7);
         else
             emit UpdateToolbarState(0);
@@ -494,6 +539,18 @@ void MainWindow::OnMapItemChanged()
     }
 }
 
+void MainWindow::OnTabChanged(int index)
+{
+    if(index == 0)
+    {
+        emit OnProjectItemChanged();
+    }
+    else if(index == 1)
+    {
+        emit OnMapItemChanged();
+    }
+}
+
 void MainWindow::OnEditDeviceChanged(int nIndex)
 {
     mapView->setViewMode(Edit);
@@ -505,10 +562,11 @@ void MainWindow::UpdateToolbarState(int state)
     foreach(QAction* btn,QList<QAction*>()<<btnCreateProj<<btnOpenProj<<btnSaveProj
             <<btnCloseProj<<btnAddController<<btnDeleteController<<btnAddLoop
             <<btnDeleteLoop<<btnAddDevice<<btnDeleteDevice<<btnAddBuilding<<btnDeleteBuilding<<btnAddLayer
-            <<btnDeleteLayer<<btnSetBackImage<<btnPan<<btnZoomin<<btnZoomout)
+            <<btnDeleteLayer<<btnSetBackImage<<btnPan<<btnZoomin<<btnZoomout<<actDevList)
     {
         btn->setVisible(false);
     }
+
 
     btnCreateProj->setVisible(true);
     btnOpenProj->setVisible(true);
@@ -560,6 +618,7 @@ void MainWindow::UpdateToolbarState(int state)
     {
         btnAddDevice->setVisible(true);
         btnDeleteLoop->setVisible(true);
+        actDevList->setVisible(true);
     }
         break;
     case 7:

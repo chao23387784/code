@@ -11,6 +11,7 @@
 #include <QComboBox>
 #include "crttreemodel.h"
 #include "crttreeview.h"
+#include <QTabWidget>
 
 class MainWindow : public QMainWindow
 {
@@ -42,12 +43,14 @@ private slots:
     void OnSetBackImage();
     void OnProjectItemChanged();
     void OnMapItemChanged();
+    void OnTabChanged(int index);
 public slots:
     void OnEditDeviceChanged(int nIndex);
     void UpdateToolbarState(int state);
 protected:
     void closeEvent(QCloseEvent *);
 private:
+    QTabWidget* tabTree;
     CrtTreeView* treeProject;
     CrtTreeView* treeMap;
     CrtTreeModel* treeProjectModel;
@@ -73,6 +76,7 @@ private:
     QAction* btnDeleteDevice;
 
     QComboBox* cmbDevList;
+    QAction* actDevList;
 
     QAction* btnSetBackImage;
     QAction* btnPan;

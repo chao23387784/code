@@ -16,6 +16,7 @@ public:
 private:
     CrtScene* scene;
 public:
+    int maxDeviceCount;
     QList<CrtDevice*> m_lstDevice;
 };
 

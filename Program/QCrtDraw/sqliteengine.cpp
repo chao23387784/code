@@ -33,6 +33,11 @@ bool SqliteEngine::ExeNoQuery(const QString &sql)
 {
     if(!conn.isOpen())return false;
     QSqlQuery sq;
+    if(!sq.exec(sql))
+    {
+        QString error = sq.lastError().text();
+        error = "";
+    }
     return sq.exec(sql);
 }
 
@@ -114,40 +119,40 @@ bool SqliteEngine::CreateDefaultCrtTables()
     if(!IsTableExist("ControllerTb"))
     {
         sq.exec("create table ControllerTb("
-                "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                "number INT,"
+                "key INTEGER PRIMARY KEY AUTOINCREMENT,"
+                "id INT,"
                 "name VARCHAR(255),"
                 "project_id INT);");
     }
     if(!IsTableExist("LoopTb"))
     {
         sq.exec("create table LoopTb("
-                "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                "number INT,"
+                "key INTEGER PRIMARY KEY AUTOINCREMENT,"
+                "id INT,"
                 "name VARCHAR(255),"
                 "controller_id INT);");
     }
     if(!IsTableExist("BuildingTb"))
     {
         sq.exec("create table BuildingTb("
-                "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                "number INT,"
+                "key INTEGER PRIMARY KEY AUTOINCREMENT,"
+                "id INT,"
                 "name VARCHAR(255),"
                 "project_id INT);");
     }
     if(!IsTableExist("LayerTb"))
     {
         sq.exec("create table LayerTb("
-                "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                "number INT,"
+                "key INTEGER PRIMARY KEY AUTOINCREMENT,"
+                "id INT,"
                 "name VARCHAR(255),"
                 "building_id INT);");
     }
     if(!IsTableExist("DeviceTb"))
     {
         sq.exec("create table DeviceTb("
-                "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                "number INT,"
+                "key INTEGER PRIMARY KEY AUTOINCREMENT,"
+                "id INT,"
                 "name VARCHAR(255),"
                 "loop_id INT,"
                 "layer_id INT,"

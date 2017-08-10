@@ -111,7 +111,7 @@ CrtProject *CrtTreeModel::save(int type)
     return NULL;
 }
 
-void CrtTreeModel::InsertItem(CrtTreeItem *item, const QModelIndex &parent)
+void CrtTreeModel::insertItem(CrtTreeItem *item, const QModelIndex &parent)
 {
     if(parent.isValid())
     {
@@ -127,7 +127,7 @@ void CrtTreeModel::InsertItem(CrtTreeItem *item, const QModelIndex &parent)
     }
 }
 
-void CrtTreeModel::DeleteItem(const QModelIndex &index)
+void CrtTreeModel::deleteItem(const QModelIndex &index)
 {
     if(index.isValid())
     {

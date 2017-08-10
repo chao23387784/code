@@ -10,7 +10,9 @@ class CrtLoop : public CrtObject
 public:
     explicit CrtLoop(CrtObject *parent = 0);
     ~CrtLoop();
+    int getAvaliableDeviceID();
 public:
+    int maxDeviceID;
     QList<CrtDevice*> m_lstDevice;
 };
 

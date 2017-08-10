@@ -6,12 +6,17 @@
 #include "crtbuilding.h"
 #include "crtobject.h"
 
+
 class CrtProject : public CrtObject
 {
 public:
     explicit CrtProject(CrtObject *parent = 0);
     ~CrtProject();
+    int getAvaliableControllerID();
+    int getAvaliableBuildingID();
 public:
+    int maxControllerID;
+    int maxBuildingID;
     QList<CrtController*> m_lstController;
     QList<CrtBuilding*> m_lstBuilding;
 };

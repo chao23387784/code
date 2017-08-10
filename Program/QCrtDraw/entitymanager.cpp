@@ -57,7 +57,7 @@ void EntityManager::loadEntity(CrtObject *obj)
             if(query.first())
             {
                 obj->setID(query.value(0).toInt());
-                obj->setKey(query.value(0).toInt());
+                //obj->setKey(query.value(0).toInt());
                 obj->setName(query.value(1).toString());
                 loadEntity(obj);
             }
@@ -72,7 +72,7 @@ void EntityManager::loadEntity(CrtObject *obj)
             while(query.next())
             {
                 CrtController* item = new CrtController(obj);
-                item->setKey(query.value(0).toInt());
+                //item->setKey(query.value(0).toInt());
                 item->setID(query.value(1).toInt());
                 item->setName(query.value(2).toString());
                 static_cast<CrtProject*>(obj)->m_lstController.append(item);
@@ -87,7 +87,7 @@ void EntityManager::loadEntity(CrtObject *obj)
             while(query.next())
             {
                 CrtBuilding* item = new CrtBuilding(obj);
-                item->setKey(query.value(0).toInt());
+                //item->setKey(query.value(0).toInt());
                 item->setID(query.value(1).toInt());
                 item->setName(query.value(2).toString());
                 static_cast<CrtProject*>(obj)->m_lstBuilding.append(item);
@@ -104,7 +104,7 @@ void EntityManager::loadEntity(CrtObject *obj)
             while(query.next())
             {
                 CrtLoop* item = new CrtLoop(obj);
-                item->setKey(query.value(0).toInt());
+                //item->setKey(query.value(0).toInt());
                 item->setID(query.value(1).toInt());
                 item->setName(query.value(2).toString());
                 static_cast<CrtController*>(obj)->m_lstLoop.append(item);
@@ -121,7 +121,7 @@ void EntityManager::loadEntity(CrtObject *obj)
             while(query.next())
             {
                 CrtDevice* item = new CrtDevice(obj);
-                item->setKey(query.value(0).toInt());
+                //item->setKey(query.value(0).toInt());
                 item->setID(query.value(1).toInt());
                 item->setName(query.value(2).toString());
                 //item->setType(query.value(5).toInt());
@@ -139,7 +139,7 @@ void EntityManager::loadEntity(CrtObject *obj)
             while(query.next())
             {
                 CrtLayer* item = new CrtLayer(obj);
-                item->setKey(query.value(0).toInt());
+                //item->setKey(query.value(0).toInt());
                 item->setID(query.value(1).toInt());
                 item->setName(query.value(2).toString());
                 static_cast<CrtBuilding*>(obj)->m_lstLayer.append(item);
@@ -159,7 +159,7 @@ bool EntityManager::saveEntity(CrtObject *obj)
     if(!engine->IsConnAlive())return false;
     if(!obj)return true;
 
-    if(obj->Type().compare("project"))
+    if(!obj->Type().compare("project"))
     {
         QSqlQuery query;
 
@@ -169,71 +169,91 @@ bool EntityManager::saveEntity(CrtObject *obj)
 
         if(!query.exec())return false;
 
+        query.clear();
+
         foreach(CrtObject* item,static_cast<CrtProject*>(obj)->m_lstController)
+        {
             if(!saveEntity(item))return false;
+        }
 
         foreach(CrtObject* item,static_cast<CrtProject*>(obj)->m_lstBuilding)
+        {
             if(!saveEntity(item))return false;
+        }
     }
-    else if(obj->Type().compare("controller"))
+    else if(!obj->Type().compare("controller"))
     {
         QSqlQuery query;
 
-        query.prepare("insert into ControllerTb(number,name,project_id) values(:number,:name,:proj_id)");
-        query.bindValue(":number",obj->ID());
+        query.prepare("insert into ControllerTb(id,name,project_id) values(:id,:name,:proj_id)");
+        query.bindValue(":id",obj->ID());
         query.bindValue(":name",obj->Name());
         query.bindValue(":proj_id",obj->Parent()->ID());
 
         if(!query.exec())return false;
 
+        query.clear();
+
         foreach(CrtObject* item,static_cast<CrtController*>(obj)->m_lstLoop)
+        {
             if(!saveEntity(item))return false;
+        }
     }
-    else if(obj->Type().compare("loop"))
+    else if(!obj->Type().compare("loop"))
     {
         QSqlQuery query;
 
-        query.prepare("insert into LoopTb(number,name,controller_id) values(:number,:name,:controller_id)");
-        query.bindValue(":number",obj->ID());
+        query.prepare("insert into LoopTb(id,name,controller_id) values(:id,:name,:controller_id)");
+        query.bindValue(":id",obj->ID());
         query.bindValue(":name",obj->Name());
         query.bindValue(":controller_id",obj->Parent()->ID());
 
         if(!query.exec())return false;
 
+        query.clear();
+
         foreach(CrtObject* item,static_cast<CrtLoop*>(obj)->m_lstDevice)
+        {
             if(!saveEntity(item))return false;
+        }
     }
-    else if(obj->Type().compare("building"))
+    else if(!obj->Type().compare("building"))
     {
         QSqlQuery query;
 
-        query.prepare("insert into BuildingTb(number,name,project_id) values(:number,:name,:proj_id)");
-        query.bindValue(":number",obj->ID());
+        query.prepare("insert into BuildingTb(id,name,project_id) values(:id,:name,:proj_id)");
+        query.bindValue(":id",obj->ID());
         query.bindValue(":name",obj->Name());
         query.bindValue(":proj_id",obj->Parent()->ID());
 
         if(!query.exec())return false;
 
+        query.clear();
+
         foreach(CrtObject* item,static_cast<CrtBuilding*>(obj)->m_lstLayer)
+        {
             if(!saveEntity(item))return false;
+        }
     }
-    else if(obj->Type().compare("layer"))
+    else if(!obj->Type().compare("layer"))
     {
         QSqlQuery query;
 
-        query.prepare("insert into LayerTb(number,name,building_id) values(:number,:name,:building_id)");
-        query.bindValue(":number",obj->ID());
+        query.prepare("insert into LayerTb(id,name,building_id) values(:id,:name,:building_id)");
+        query.bindValue(":id",obj->ID());
         query.bindValue(":name",obj->Name());
         query.bindValue(":building_id",obj->Parent()->ID());
 
         if(!query.exec())return false;
+
+        query.clear();
     }
-    else if(obj->Type().compare("device"))
+    else if(!obj->Type().compare("device"))
     {
         QSqlQuery query;
 
-        query.prepare("insert into DeviceTb(number,name,loop_id,layer_id,type,type_name) values(:number,:name,:loop_id,:layer_id,:type,:type_name)");
-        query.bindValue(":number",obj->ID());
+        query.prepare("insert into DeviceTb(id,name,loop_id,layer_id,type,type_name) values(:id,:name,:loop_id,:layer_id,:type,:type_name)");
+        query.bindValue(":id",obj->ID());
         query.bindValue(":name",obj->Name());
         query.bindValue(":loop_id",obj->Parent()->ID());
         //query.bindValue(":layer_id",static_cast<CrtDevice*>(obj)->LayerID());
@@ -241,62 +261,24 @@ bool EntityManager::saveEntity(CrtObject *obj)
         //query.bindValue(":type",//string type to int type);
 
         if(!query.exec())return false;
+
+        query.clear();
     }
-}
 
-int EntityManager::getAvaliableNumber(const QString &tableName)
-{
-    if(engine->IsConnAlive())
-    {
-        QSqlQuery query;
-        QString sql = QString("select max(number) from %1").arg(tableName);
-        if(engine->ExeQuery(sql,query))
-        {
-            if(query.first())
-            {
-                return query.value(0).toInt() + 1;
-            }
-        }
-    }
-    return -1;
-}
-
-int EntityManager::getAvaliableControllerNumber(int proj_id)
-{
-    return -1;
-}
-
-int EntityManager::getAvaliableLoopNumber(int controller_id, int proj_id)
-{
-    return -1;
-}
-
-int EntityManager::getAvaliableBuildingNumber(int proj_id)
-{
-    return -1;
-}
-
-int EntityManager::getAvaliableLayerNumber(int building_id, int proj_id)
-{
-    return -1;
-}
-
-int EntityManager::getAvaliableDeviceNumber(int loop_id, int controller_id, int proj_id)
-{
-    return -1;
+    return true;
 }
 
 
 bool EntityManager::save(CrtProject *proj)
 {
-    if(!engine->IsConnAlive())return false;
+    if(!engine->IsConnAlive())engine->OpenDatabase();
     if(engine->beginTransaction()){
-        if(!engine->ExeNoQuery("delete * from DeviceTb"))goto err;
-        if(!engine->ExeNoQuery("delete * from LayerTb"))goto err;
-        if(!engine->ExeNoQuery("delete * from BuildingTb"))goto err;
-        if(!engine->ExeNoQuery("delete * from LoopTb"))goto err;
-        if(!engine->ExeNoQuery("delete * from ControllerTb"))goto err;
-        if(!engine->ExeNoQuery("delete * from ProjectTb"))goto err;
+        if(!engine->ExeNoQuery("delete from DeviceTb"))goto err;
+        if(!engine->ExeNoQuery("delete from LayerTb"))goto err;
+        if(!engine->ExeNoQuery("delete from BuildingTb"))goto err;
+        if(!engine->ExeNoQuery("delete from LoopTb"))goto err;
+        if(!engine->ExeNoQuery("delete from ControllerTb"))goto err;
+        if(!engine->ExeNoQuery("delete from ProjectTb"))goto err;
 
         if(!saveEntity(proj))goto err;
 
