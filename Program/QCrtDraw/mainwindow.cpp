@@ -107,7 +107,7 @@ void MainWindow::InitUi()
     treeProject = new CrtTreeView(this);
     //treeProject->setItemDelegate(new QStyledItemDelegate());
     //treeProject->setExpandsOnDoubleClick(false);
-    //treeProject->setEditTriggers(QAbstractItemView::DoubleClicked);
+    //treeProject->setEditTriggers(QAbstractItemView::SelectedClicked);
     tabTree->addTab(treeProject,tr("Project"));
     treeMap = new CrtTreeView(this);
     tabTree->addTab(treeMap,tr("Map"));
@@ -306,10 +306,8 @@ void MainWindow::OnAddController()
     controller->setID(id);
     controller->setName(QString(tr("NT-Controller%1")).arg(id));
     CrtMaster::GetInstance()->Project()->m_lstController.append(controller);
-    CrtTreeItem* item = new CrtTreeItem();
-    item->setData(controller);
 
-    treeProject->insertItem(item,index);
+    treeProject->insertItem(controller,index);
 }
 
 void MainWindow::OnDeleteController()
@@ -347,10 +345,7 @@ void MainWindow::OnAddLoop()
     loop->setName(QString(tr("NT-Loop%1")).arg(id));
     controller->m_lstLoop.append(loop);
 
-    CrtTreeItem* item = new CrtTreeItem();
-    item->setData(loop);
-
-    treeProject->insertItem(item,index);
+    treeProject->insertItem(loop,index);
 }
 
 void MainWindow::OnDeleteLoop()
@@ -388,10 +383,7 @@ void MainWindow::OnAddDevice()
     device->setDeviceType(cmbDevList->currentText());
     loop->m_lstDevice.append(device);
 
-    CrtTreeItem* item = new CrtTreeItem();
-    item->setData(device);
-
-    treeProject->insertItem(item,index);
+    treeProject->insertItem(device,index);
 }
 
 void MainWindow::OnDeleteDevice()
@@ -426,10 +418,7 @@ void MainWindow::OnAddBuilding()
     building->setName(QString(tr("NT-Building%1")).arg(id));
     CrtMaster::GetInstance()->Project()->m_lstBuilding.append(building);
 
-    CrtTreeItem* item = new CrtTreeItem();
-    item->setData(building);
-
-    treeMap->insertItem(item,index);
+    treeMap->insertItem(building,index);
 }
 
 void MainWindow::OnDeleteBuilding()
@@ -466,9 +455,7 @@ void MainWindow::OnAddLayer()
     layer->setName(QString(tr("NT-Layer%1")).arg(id));
     building->m_lstLayer.append(layer);
 
-    CrtTreeItem* item = new CrtTreeItem();
-    item->setData(layer);
-    treeMap->insertItem(item,index);
+    treeMap->insertItem(layer,index);
 }
 
 void MainWindow::OnDeleteLayer()

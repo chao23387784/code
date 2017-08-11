@@ -111,11 +111,13 @@ CrtProject *CrtTreeModel::save(int type)
     return NULL;
 }
 
-void CrtTreeModel::insertItem(CrtTreeItem *item, const QModelIndex &parent)
+void CrtTreeModel::insertItem(CrtObject *data, const QModelIndex &parent)
 {
     if(parent.isValid())
     {
         beginResetModel();
+        CrtTreeItem* item = new CrtTreeItem();
+        item->setData(data);
         CrtTreeItem* parentItem = (CrtTreeItem*)parent.internalPointer();
         parentItem->addChild(item);
         item->setParent(parentItem);

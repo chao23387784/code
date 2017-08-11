@@ -10,7 +10,7 @@ public:
     explicit CrtTreeView(QWidget *parent = 0);
     void expandItem(const QModelIndex& index);
     void deleteItem(const QModelIndex& index);
-    void insertItem(CrtTreeItem* item,const QModelIndex &parent);
+    void insertItem(CrtObject* data,const QModelIndex &parent);
 };
 
 #endif // CRTTREEVIEW_H

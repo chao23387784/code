@@ -44,12 +44,13 @@ void CrtTreeView::deleteItem(const QModelIndex &index)
     emit clicked(idx);
 }
 
-void CrtTreeView::insertItem(CrtTreeItem *item, const QModelIndex &parent)
+void CrtTreeView::insertItem(CrtObject *data, const QModelIndex &parent)
 {
     CrtTreeModel* md = (CrtTreeModel*)model();
-    md->insertItem(item,parent);
+    md->insertItem(data,parent);
 
     expandItem(parent);
     setCurrentIndex(parent);
     emit clicked(parent);
 }
+
