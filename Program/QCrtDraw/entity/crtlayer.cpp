@@ -1,0 +1,98 @@
+#include "crtlayer.h"
+#include "common.h"
+
+CrtLayer::CrtLayer(CrtObject *parent) : CrtObject(parent)
+{
+    filePath = "";
+    scene = new CrtGraphicsScene(this);
+    setType("layer");
+}
+
+CrtLayer::~CrtLayer()
+{
+    foreach(CrtObject* item,m_lstDevice)
+    {
+        dynamic_cast<CrtDevice*>(item)->destroyDeviceItem();
+    }
+    SAFE_DELETE(scene);
+    m_lstDevice.clear();
+}
+
+void CrtLayer::addChild(CrtObject *child)
+{
+    if(m_lstDevice.contains(child))return;
+    m_lstDevice.append(child);
+    dynamic_cast<CrtDevice*>(child)->setLayerID(ID());
+    dynamic_cast<CrtDevice*>(child)->setBuildingID(Parent()->ID());
+    scene->addItem(dynamic_cast<CrtDevice*>(child)->createDeviceItem());
+}
+
+CrtObject *CrtLayer::childAt(int nIndex, int type)
+{
+    Q_UNUSED(type);
+    if(m_lstDevice.count()<=0 || nIndex >= m_lstDevice.count() || nIndex < 0)
+        return NULL;
+    return m_lstDevice[nIndex];
+}
+
+void CrtLayer::removeChild(int nIndex, int type)
+{
+    Q_UNUSED(type);
+    Q_ASSERT(scene);
+
+    if(m_lstDevice.count()<=0 || nIndex >= m_lstDevice.count() || nIndex < 0)
+        return;
+
+    CrtDevice* item = dynamic_cast<CrtDevice*>(m_lstDevice[nIndex]);
+    scene->removeItem(item->createDeviceItem());
+    item->destroyDeviceItem();
+    item->setLayerID(-1);
+    item->setBuildingID(-1);
+    m_lstDevice.removeAt(nIndex);
+}
+
+int CrtLayer::indexOf(CrtObject *child)
+{
+    if(child != NULL)
+    {
+        return m_lstDevice.indexOf(const_cast<CrtObject*>(child));
+    }
+    return -1;
+}
+
+int CrtLayer::childCount(int type)
+{
+    Q_UNUSED(type);
+    return m_lstDevice.count();
+}
+
+
+/*void CrtLayer::setScene(CrtScene *s)
+{
+    if(scene)
+    {
+        delete scene;
+        scene = NULL;
+    }
+
+    scene = s;
+}*/
+
+CrtGraphicsScene *CrtLayer::Scene()
+{
+    return scene;
+}
+
+void CrtLayer::setBackground(QString strPath)
+{
+    Q_ASSERT(scene);
+    scene->setBackground(strPath);
+    scene->addItem(scene->Background());
+    filePath = strPath;
+}
+
+/*CrtBackground *CrtLayer::BackGround()
+{
+    return bg;
+}*/
+
