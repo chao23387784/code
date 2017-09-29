@@ -25,6 +25,7 @@ protected:
     void dragLeaveEvent(QGraphicsSceneDragDropEvent *event);
     void dropEvent(QGraphicsSceneDragDropEvent *event);
     void keyPressEvent(QKeyEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 private:
     CrtBackground* backgroundItem;
     CrtLayer* layer;

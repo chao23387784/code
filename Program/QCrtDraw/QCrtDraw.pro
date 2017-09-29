@@ -65,7 +65,8 @@ SOURCES += main.cpp\
     widget/crtgraphicsviewcontainer.cpp \
     widget/crtsetdevicedlg.cpp \
     interview/crtsetdevicemodel.cpp \
-    interview/crtsetdeviceproxymodel.cpp
+    interview/crtsetdeviceproxymodel.cpp \
+    crtstyle.cpp
 
 HEADERS  += mainwindow.h \
     crtmaster.h \
@@ -102,7 +103,8 @@ HEADERS  += mainwindow.h \
     widget/crtgraphicsviewcontainer.h \
     widget/crtsetdevicedlg.h \
     interview/crtsetdevicemodel.h \
-    interview/crtsetdeviceproxymodel.h
+    interview/crtsetdeviceproxymodel.h \
+    crtstyle.h
 
 DISTFILES +=
 

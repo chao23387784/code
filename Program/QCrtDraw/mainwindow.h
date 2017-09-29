@@ -12,6 +12,7 @@
 #include <QTabWidget>
 #include "crttwowaypushbutton.h"
 #include <QToolButton>
+#include <QDockWidget>
 #include "crtpropertycontianer.h"
 #include "crtgraphicsviewcontainer.h"
 
@@ -67,6 +68,9 @@ private:
     CrtTreeModel* treeProjectModel;
     CrtTreeModel* treeMapModel;
     CrtGraphicsView* mapView;
+    QDockWidget* panelProject;
+    QDockWidget* panelMap;
+    QDockWidget* panelDevice;
 
     QAction* btnCreateProj;
     QAction* btnOpenProj;
@@ -95,6 +99,7 @@ private:
 
     QAction* btnSetBackImage;
     QToolButton* tbPan;
+    QToolButton* tbSetDevice;
     QAction* btnPan;
     QAction* btnZoomin;
     QAction* btnZoomout;

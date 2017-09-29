@@ -11,6 +11,7 @@
 #include "crtmaster.h"
 #include <QMessageBox>
 #include "crtgraphicsview.h"
+#include "crtsetdevicedlg.h"
 
 CrtGraphicsScene::CrtGraphicsScene(QObject *parent)
     :QGraphicsScene(parent)
@@ -111,5 +112,32 @@ void CrtGraphicsScene::keyPressEvent(QKeyEvent *event)
         }
     } else {
         QGraphicsScene::keyPressEvent(event);
+    }
+}
+
+void CrtGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    CrtSetDeviceDlg* dlg = CrtMaster::GetInstance()->getCrtSetDeviceDlg();
+    if(dlg->isVisible())
+    {
+        CrtObject* obj = dlg->getCurrentObject();
+        if(obj)
+        {
+            CrtDevice* device = dynamic_cast<CrtDevice*>(obj);
+            if(device->BuildingID() != -1 && device->LayerID() != -1)
+            {
+                CrtObject* ly = CrtMaster::GetInstance()->findMapObject(0,device->BuildingID(),device->LayerID());
+                ly->removeChild(ly->indexOf(obj));
+            }
+            device->createDeviceItem()->setPos(event->scenePos());
+            layer->addChild(obj);
+            clearSelection();
+            device->createDeviceItem()->setSelected(true);
+            emit CrtMaster::GetInstance()->getCrtGraphicsView()->dragDone();
+        }
+    }
+    else
+    {
+        QGraphicsScene::mousePressEvent(event);
     }
 }

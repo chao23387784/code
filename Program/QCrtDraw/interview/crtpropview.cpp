@@ -1,9 +1,11 @@
 #include "crtpropview.h"
 #include "crtmaster.h"
+#include <QHeaderView>
 
 CrtPropView::CrtPropView(QWidget *parent):QTableView(parent)
 {
     setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked);
+    verticalHeader()->setVisible(false);
 }
 
 void CrtPropView::itemDataChanged(QString value)

@@ -20,12 +20,19 @@ CrtGraphicsViewContainer::CrtGraphicsViewContainer(CrtGraphicsView *view, QToolB
 
 void CrtGraphicsViewContainer::setCurrentPanel(CrtObject *obj)
 {
-    if(!obj->Type().compare("layer"))
+    if(!obj)
     {
-        setCurrentIndex(1);
+        setCurrentIndex(0);
     }
     else
     {
-        setCurrentIndex(0);
+        if(!obj->Type().compare("layer"))
+        {
+            setCurrentIndex(1);
+        }
+        else
+        {
+            setCurrentIndex(0);
+        }
     }
 }

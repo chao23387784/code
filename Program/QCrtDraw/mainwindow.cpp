@@ -105,8 +105,13 @@ void MainWindow::InitUi()
     btnPan = toolBarGraphics->addWidget(tbPan);
     toolBarGraphics->addAction(btnZoomin);
     toolBarGraphics->addAction(btnZoomout);
-    btnSetDevice = new QAction(QIcon(":/img/marknormalpoint.png"),tr("Set Device"),this);
-    toolBarGraphics->addAction(btnSetDevice);
+
+    tbSetDevice = new QToolButton(this);
+    tbSetDevice->setIcon(QIcon(":/img/marknormalpoint.png"));
+    tbSetDevice->setToolTip(tr("Set Device"));
+    tbSetDevice->setCheckable(true);
+    btnSetDevice = toolBarGraphics->addWidget(tbSetDevice);
+    //toolBarGraphics->addAction(btnSetDevice);
 
     cmbDevList = new QComboBox();
     cmbDevList->setFixedWidth(180);
@@ -138,11 +143,11 @@ void MainWindow::InitUi()
     UpdateToolbarProjectState(0);
     UpdateToolbarMapState(0);
 
-    QDockWidget* treePanel = new QDockWidget(this);
-    treePanel->setFeatures(QDockWidget::DockWidgetMovable);
-    treePanel->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    panelProject = new QDockWidget(this);
+    panelProject->setFeatures(QDockWidget::DockWidgetMovable);
+    panelProject->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     QWidget* windProject = new QWidget(this);
-    treePanel->setWidget(windProject);
+    panelProject->setWidget(windProject);
 
     treeProject = new CrtTreeView(this);
     treeProject->setHeaderHidden(true);
@@ -164,24 +169,35 @@ void MainWindow::InitUi()
     layoutProject->addWidget(treeProject);
 
     windProject->setLayout(layoutProject);
-    treePanel->setWindowTitle(tr("Project"));
+    panelProject->setWindowTitle(tr("Project"));
 
-    addDockWidget(Qt::LeftDockWidgetArea,treePanel);
+    addDockWidget(Qt::LeftDockWidgetArea,panelProject);
 
-    QDockWidget* tbPanel = new QDockWidget(this);
-    tbPanel->setFeatures(QDockWidget::DockWidgetMovable);
-    tbPanel->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    panelMap = new QDockWidget(this);
+    panelMap->setFeatures(QDockWidget::DockWidgetMovable);
+    panelMap->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     QWidget* windMap = new QWidget(this);
-    tbPanel->setWidget(windMap);
+    panelMap->setWidget(windMap);
 
     QVBoxLayout* layoutMap = new QVBoxLayout(this);
     layoutMap->addWidget(toolBarMap);
     layoutMap->addWidget(treeMap);
     windMap->setLayout(layoutMap);
 
-    tbPanel->setWindowTitle(tr("Design"));
+    panelMap->setWindowTitle(tr("Design"));
 
-    addDockWidget(Qt::RightDockWidgetArea,tbPanel);
+    addDockWidget(Qt::RightDockWidgetArea,panelMap);
+
+    panelDevice = new QDockWidget(this);
+    panelDevice->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    panelDevice->setAllowedAreas(Qt::LeftDockWidgetArea);
+    CrtSetDeviceDlg* dlg = new CrtSetDeviceDlg(this);
+    CrtMaster::GetInstance()->setCrtSetDeviceDlg(dlg);
+    panelDevice->setWidget(dlg);
+    panelDevice->setWindowTitle(tr("Device"));
+    addDockWidget(Qt::LeftDockWidgetArea,panelDevice);
+    panelDevice->setVisible(false);
+    //panelDevice->setVisible(false);
 
     tabMain = new QTabWidget(this);
 
@@ -207,6 +223,7 @@ void MainWindow::InitConnect()
     connect(btnSaveProj,SIGNAL(triggered(bool)),this,SLOT(OnSaveProject()));
     connect(btnCloseProj,SIGNAL(triggered(bool)),this,SLOT(OnCloseProject()));
     connect(tbPan,SIGNAL(clicked(bool)),this,SLOT(OnViewTransform()));
+    connect(tbSetDevice,SIGNAL(clicked(bool)),this,SLOT(OnSetDevice()));
     connect(btnZoomin,SIGNAL(triggered(bool)),this,SLOT(OnViewTransform()));
     connect(btnZoomout,SIGNAL(triggered(bool)),this,SLOT(OnViewTransform()));
     connect(crtBtnAddController,SIGNAL(quickpress()),this,SLOT(OnAddController()));
@@ -329,6 +346,10 @@ void MainWindow::OnSaveProject()
 void MainWindow::OnCloseProject()
 {
     if(!CrtMaster::GetInstance()->Project())return;
+    panelDevice->setVisible(false);
+    panelProject->setVisible(true);
+    CrtMaster::GetInstance()->getCrtSetDeviceDlg()->releaseData();
+    frmView->setCurrentPanel(NULL);
     mapView->setScene(NULL);
     treeMapModel->unload();
     treeProjectModel->unload();
@@ -700,8 +721,20 @@ void MainWindow::OnMapItemChanged()
 
 void MainWindow::OnSetDevice()
 {
-    CrtSetDeviceDlg* dlg = new CrtSetDeviceDlg(this);
-    dlg->show();
+    if(CrtMaster::GetInstance()->Project())
+    {
+        if(!tbSetDevice->isChecked())
+        {
+            panelDevice->setVisible(false);
+            panelProject->setVisible(true);
+            CrtMaster::GetInstance()->getCrtSetDeviceDlg()->releaseData();
+        }else
+        {
+            CrtMaster::GetInstance()->getCrtSetDeviceDlg()->loadData();
+            panelDevice->setVisible(true);
+            panelProject->setVisible(false);
+        }
+    }
 }
 
 void MainWindow::UpdateToolbarProjectState(int state)

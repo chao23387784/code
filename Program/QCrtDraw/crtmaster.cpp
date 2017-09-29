@@ -166,6 +166,16 @@ CrtGraphicsView *CrtMaster::getCrtGraphicsView()
     return view;
 }
 
+void CrtMaster::setCrtSetDeviceDlg(CrtSetDeviceDlg *dlg)
+{
+    setDeviceDlg = dlg;
+}
+
+CrtSetDeviceDlg *CrtMaster::getCrtSetDeviceDlg()
+{
+    return setDeviceDlg;
+}
+
 /*void CrtMaster::setWelcomeWidget(CrtWelcomWidget *welcom)
 {
     welcomWidget = welcom;

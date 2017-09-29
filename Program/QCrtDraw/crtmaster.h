@@ -8,6 +8,7 @@
 #include <QStringList>
 #include "crttreeview.h"
 #include "crtgraphicsview.h"
+#include "crtsetdevicedlg.h"
 //#include "crtwelcomwidget.h"
 
 class CrtMaster
@@ -35,6 +36,8 @@ public:
     CrtTreeView* MapTreeView();
     void setCrtGraphicsView(CrtGraphicsView* view);
     CrtGraphicsView *getCrtGraphicsView();
+    void setCrtSetDeviceDlg(CrtSetDeviceDlg* dlg);
+    CrtSetDeviceDlg* getCrtSetDeviceDlg();
    // void setWelcomeWidget(CrtWelcomWidget* welcom);
     //CrtWelcomWidget* WelcomWidget();
 
@@ -58,6 +61,7 @@ private:
     CrtTreeView* treeProjectView;
     CrtTreeView* treeMapView;
     CrtGraphicsView* view;
+    CrtSetDeviceDlg* setDeviceDlg;
     //CrtWelcomWidget* welcomWidget;
 };
 

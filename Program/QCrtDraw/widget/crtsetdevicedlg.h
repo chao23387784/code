@@ -1,18 +1,22 @@
 #ifndef CRTSETDEVICEDLG_H
 #define CRTSETDEVICEDLG_H
-#include <QDialog>
+#include <QWidget>
 #include <QComboBox>
 #include <QLabel>
 #include <QTableView>
 #include "crtsetdevicemodel.h"
 #include "crtsetdeviceproxymodel.h"
+#include "crtobject.h"
 
-class CrtSetDeviceDlg : public QDialog
+class CrtSetDeviceDlg : public QWidget
 {
     Q_OBJECT
 public:
     explicit CrtSetDeviceDlg(QWidget *parent = 0, Qt::WindowFlags f = 0);
     ~CrtSetDeviceDlg();
+    void loadData();
+    void releaseData();
+    CrtObject* getCurrentObject();
 protected slots:
     void OnComboItemSelected();
     void OnDragDone();
