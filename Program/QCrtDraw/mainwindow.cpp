@@ -190,12 +190,12 @@ void MainWindow::InitUi()
 
     panelDevice = new QDockWidget(this);
     panelDevice->setFeatures(QDockWidget::NoDockWidgetFeatures);
-    panelDevice->setAllowedAreas(Qt::LeftDockWidgetArea);
+    panelDevice->setAllowedAreas(Qt::BottomDockWidgetArea);
     CrtSetDeviceDlg* dlg = new CrtSetDeviceDlg(this);
     CrtMaster::GetInstance()->setCrtSetDeviceDlg(dlg);
     panelDevice->setWidget(dlg);
     panelDevice->setWindowTitle(tr("Device"));
-    addDockWidget(Qt::LeftDockWidgetArea,panelDevice);
+    addDockWidget(Qt::BottomDockWidgetArea,panelDevice);
     panelDevice->setVisible(false);
     //panelDevice->setVisible(false);
 
@@ -726,13 +726,13 @@ void MainWindow::OnSetDevice()
         if(!tbSetDevice->isChecked())
         {
             panelDevice->setVisible(false);
-            panelProject->setVisible(true);
+            //panelProject->setVisible(true);
             CrtMaster::GetInstance()->getCrtSetDeviceDlg()->releaseData();
         }else
         {
             CrtMaster::GetInstance()->getCrtSetDeviceDlg()->loadData();
             panelDevice->setVisible(true);
-            panelProject->setVisible(false);
+            //panelProject->setVisible(false);
         }
     }
 }

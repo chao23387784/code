@@ -50,10 +50,10 @@ CrtSetDeviceDlg::CrtSetDeviceDlg(QWidget *parent, Qt::WindowFlags f):QWidget(par
     proxymodel->setSourceModel(model);
     DeviceTable->setModel(proxymodel);
     DeviceTable->verticalHeader()->setVisible(false);
-    DeviceTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    DeviceTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-    DeviceTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-    DeviceTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    DeviceTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+    DeviceTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    DeviceTable->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    DeviceTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
     DeviceTable->horizontalHeader()->setSectionResizeMode(4, QHeaderView::Stretch);
 
     QGridLayout* layoutTop = new QGridLayout(this);
@@ -76,7 +76,7 @@ CrtSetDeviceDlg::CrtSetDeviceDlg(QWidget *parent, Qt::WindowFlags f):QWidget(par
 
     setLayout(layoutMain);
     //setFixedSize(600,600);
-    setFixedWidth(600);
+    //setFixedWidth(600);
 }
 
 CrtSetDeviceDlg::~CrtSetDeviceDlg()
