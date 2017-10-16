@@ -8,8 +8,8 @@
 
 CrtTreeModel::CrtTreeModel(QObject *parent, int type):QAbstractItemModel(parent)
 {
-    root = NULL;
-    this->type = type;
+    m_root = NULL;
+    this->m_nType = type;
 }
 
 QModelIndex CrtTreeModel::index(int row, int column, const QModelIndex &parent) const
@@ -20,16 +20,16 @@ QModelIndex CrtTreeModel::index(int row, int column, const QModelIndex &parent) 
     CrtObject *parentItem;
     if(!parent.isValid())
     {
-        return createIndex(0,0,root);
+        return createIndex(0,0,m_root);
     }else
     {
         parentItem=static_cast<CrtObject*>(parent.internalPointer());
     }
 
-    if(!parentItem->Type().compare("layer"))
+    if(!parentItem->getType().compare("layer"))
         return QModelIndex();
 
-    CrtObject *childItem=parentItem->childAt(row,type);
+    CrtObject *childItem=parentItem->childAt(row,m_nType);
     if(childItem)
     {
         return createIndex(row,column,childItem);
@@ -48,7 +48,7 @@ QModelIndex CrtTreeModel::parent(const QModelIndex &child) const
     }
 
     CrtObject *childItem=static_cast<CrtObject*>(child.internalPointer());
-    CrtObject *parentItem=childItem->Parent();
+    CrtObject *parentItem=childItem->getParent();
 
     if(parentItem==NULL)
         return QModelIndex();
@@ -61,7 +61,7 @@ Qt::ItemFlags CrtTreeModel::flags(const QModelIndex &index) const
     if(!index.isValid())
         return 0;
 
-    if(type)
+    if(m_nType)
         return Qt::ItemIsEnabled|Qt::ItemIsSelectable|Qt::ItemIsEditable;
     return Qt::ItemIsEnabled|Qt::ItemIsSelectable|Qt::ItemIsDragEnabled;
 }
@@ -74,28 +74,28 @@ QVariant CrtTreeModel::headerData(int section, Qt::Orientation orientation, int 
     return QVariant();
 }
 
-QMimeData *CrtTreeModel::mimeData(const QModelIndexList &indexes) const
-{
-    if (indexes.count() > 0)
-     {
-        QByteArray itemData;
-        QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+//QMimeData *CrtTreeModel::mimeData(const QModelIndexList &indexes) const
+//{
+//    if (indexes.count() > 0)
+//     {
+//        QByteArray itemData;
+//        QDataStream dataStream(&itemData, QIODevice::WriteOnly);
 
-        CrtObject* node = (CrtObject*)indexes.at(0).internalPointer();
-        if (node && !node->Type().compare("device") && !dynamic_cast<CrtDevice*>(node)->isOnMap())
-        {
-            dataStream << reinterpret_cast<qlonglong>(node);
-            QMimeData *data = new QMimeData;
-            data->setData("project/items",itemData);
-            return data;
-        }
-     }
-    return NULL;
-}
+//        CrtObject* node = (CrtObject*)indexes.at(0).internalPointer();
+//        if (node && !node->getType().compare("device") && !dynamic_cast<CrtDevice*>(node)->isOnMap())
+//        {
+//            dataStream << reinterpret_cast<qlonglong>(node);
+//            QMimeData *data = new QMimeData;
+//            data->setData("project/items",itemData);
+//            return data;
+//        }
+//     }
+//    return NULL;
+//}
 
 int CrtTreeModel::rowCount(const QModelIndex &parent) const
 {
-    if(root == NULL)return 0;
+    if(m_root == NULL)return 0;
 
     CrtObject *parentItem;
 
@@ -104,9 +104,9 @@ int CrtTreeModel::rowCount(const QModelIndex &parent) const
     else
         parentItem=static_cast<CrtObject*>(parent.internalPointer());
 
-    if(!parentItem->Type().compare("layer"))return 0;
+    if(!parentItem->getType().compare("layer"))return 0;
 
-    return parentItem->childCount(type);
+    return parentItem->childCount(m_nType);
 }
 
 int CrtTreeModel::columnCount(const QModelIndex &parent) const
@@ -123,15 +123,15 @@ QVariant CrtTreeModel::data(const QModelIndex &index, int role) const
     {
         CrtObject* item = (CrtObject*)index.internalPointer();
         QString strIcon;
-        if(!item->Type().compare("device"))
+        if(!item->getType().compare("device"))
         {
-            strIcon = dynamic_cast<CrtDevice*>(item)->DeviceType();
-            return *(CrtMaster::GetInstance()->DeviceIcon(strIcon));
+            strIcon = dynamic_cast<CrtDevice*>(item)->getDeviceType();
+            return *(CrtMaster::getInstance()->getDeviceIcon(strIcon));
         }
         else
         {
-            strIcon = item->Type();
-            return *(CrtMaster::GetInstance()->TreeIcon(strIcon));
+            strIcon = item->getType();
+            return *(CrtMaster::getInstance()->getTreeIcon(strIcon));
         }
         return QVariant();
     }
@@ -139,13 +139,13 @@ QVariant CrtTreeModel::data(const QModelIndex &index, int role) const
     if(role == Qt::EditRole && index.column() == 0)
     {
         CrtObject* item = (CrtObject*)index.internalPointer();
-        return item->Name();
+        return item->getName();
     }
 
     if(role == Qt::ForegroundRole && index.column() == 0)
     {
         CrtObject* item = (CrtObject*)index.internalPointer();
-        if(!item->Type().compare("device"))
+        if(!item->getType().compare("device"))
         {
             if(dynamic_cast<CrtDevice*>(item)->isOnMap())
                 return QColor(Qt::red);
@@ -158,7 +158,7 @@ QVariant CrtTreeModel::data(const QModelIndex &index, int role) const
     if(role == Qt::DisplayRole)
     {
         CrtObject *item=static_cast<CrtObject*>(index.internalPointer());
-        return item->Name();
+        return item->getName();
     }
     return QVariant();
 }
@@ -169,9 +169,9 @@ bool CrtTreeModel::setData(const QModelIndex &index, const QVariant &value, int 
     if(!index.isValid())return false;
     CrtObject* item = (CrtObject*)index.internalPointer();
     item->setName(value.toString());  
-    if(this == CrtMaster::GetInstance()->MapTreeView()->model())
+    if(this == CrtMaster::getInstance()->getMapTreeView()->model())
     {
-            CrtMaster::GetInstance()->ProjectTreeView()->updateItem(item);
+            CrtMaster::getInstance()->getProjectTreeView()->slotUpdateItem(item);
     }
     return true;
 }
@@ -181,9 +181,9 @@ bool CrtTreeModel::load(CrtProject *proj)
     if(proj != NULL)
     {
         beginResetModel();
-        SAFE_DELETE(root);
+        SAFE_DELETE(m_root);
         //root->setParent(NULL);
-        root = proj;
+        m_root = proj;
         endResetModel();
         return true;
     }
@@ -218,10 +218,10 @@ void CrtTreeModel::deleteItem(const QModelIndex &index)
     {
         beginResetModel();
         CrtObject *item = (CrtObject*)index.internalPointer();
-        CrtObject *parent = item->Parent();
+        CrtObject *parent = item->getParent();
         if(parent)
         {
-            parent->removeChild(parent->indexOf(item),type);
+            parent->removeChild(parent->indexOf(item),m_nType);
         }
         else//delete project
         {
@@ -233,10 +233,10 @@ void CrtTreeModel::deleteItem(const QModelIndex &index)
 
 QModelIndex CrtTreeModel::indexFromItem(CrtObject *item) const
 {
-    CrtObject* parent = item->Parent();
+    CrtObject* parent = item->getParent();
     if(!parent)
     {
-        return item == root ? createIndex(0,0,root) : QModelIndex();
+        return item == m_root ? createIndex(0,0,m_root) : QModelIndex();
     }
     else
     {
@@ -248,11 +248,11 @@ QModelIndex CrtTreeModel::indexFromItem(CrtObject *item) const
 
 void CrtTreeModel::unload()
 {
-    if(root)
+    if(m_root)
     {
         beginResetModel();
         //SAFE_DELETE(root);
-        root = NULL;
+        m_root = NULL;
         endResetModel();
     }
 }

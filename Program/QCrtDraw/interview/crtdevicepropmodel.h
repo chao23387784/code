@@ -21,7 +21,7 @@ public:
     bool load(CrtObject* obj);
     void unload();
 private:
-    CrtLoop* source;
+    CrtLoop* m_source;
 };
 
 #endif // CRTDEVICEPROPMODEL_H

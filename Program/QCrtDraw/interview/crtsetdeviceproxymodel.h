@@ -12,10 +12,10 @@ public:
 protected:
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
 private:
-    int project_id;
-    int controller_id;
-    int loop_id;
-    QString device_type;
+    int m_nProject_ID;
+    int m_nController_ID;
+    int m_nLoop_ID;
+    QString m_strDevType;
 };
 
 #endif // CRTSETDEVICEPROXYMODEL_H

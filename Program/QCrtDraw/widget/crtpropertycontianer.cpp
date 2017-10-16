@@ -2,36 +2,36 @@
 
 CrtPropertyContianer::CrtPropertyContianer(QWidget *parent):QStackedWidget(parent)
 {
-    panelProject = new CrtProjectPropPanel(this);
-    panelController = new CrtControllerPropPanel(this);
-    panelLoop = new CrtLoopPropPanel(this);
-    panelDevice = new CrtDevicePropPanel(this);
-    panelWelcom = new CrtWelcomWidget(this);
+    m_panelProject = new CrtProjectPropPanel(this);
+    m_panelController = new CrtControllerPropPanel(this);
+    m_panelLoop = new CrtLoopPropPanel(this);
+    m_panelDevice = new CrtDevicePropPanel(this);
+    m_panelWelcom = new CrtWelcomWidget(this);
 
-    addWidget(panelWelcom);
-    addWidget(panelProject);
-    addWidget(panelController);
-    addWidget(panelLoop);
-    addWidget(panelDevice);
+    addWidget(m_panelWelcom);
+    addWidget(m_panelProject);
+    addWidget(m_panelController);
+    addWidget(m_panelLoop);
+    addWidget(m_panelDevice);
 }
 
 void CrtPropertyContianer::setCurrentPanel(CrtObject *obj)
 {
-    if(!obj->Type().compare("project"))
+    if(!obj->getType().compare("project"))
     {
-        panelProject->initPanel(obj);
+        m_panelProject->initPanel(obj);
         setCurrentIndex(1);
-    }else if(!obj->Type().compare("controller"))
+    }else if(!obj->getType().compare("controller"))
     {
-        panelController->initPanel(obj);
+        m_panelController->initPanel(obj);
         setCurrentIndex(2);
-    }else if(!obj->Type().compare("loop"))
+    }else if(!obj->getType().compare("loop"))
     {
-        panelLoop->initPanel(obj);
+        m_panelLoop->initPanel(obj);
         setCurrentIndex(3);
-    }else if(!obj->Type().compare("device"))
+    }else if(!obj->getType().compare("device"))
     {
-        panelDevice->initPanel(obj);
+        m_panelDevice->initPanel(obj);
         setCurrentIndex(4);
     }else
     {

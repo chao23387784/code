@@ -20,7 +20,7 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR);
     QRectF boundingRect() const;
-    CrtDevice* Device(){return device;}
+    CrtDevice* getDevice(){return m_device;}
     void setImage(const QString& imgPath);
     void initItem();
     QPolygonF rectToPolygon(const QRectF &rect, const QMatrix &matrix) const;
@@ -30,8 +30,8 @@ protected:
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 private:
-    QImage* img;
-    CrtDevice* device;
+    QImage* m_img;
+    CrtDevice* m_device;
 };
 
 #endif // CRTDEVICEITEM_H

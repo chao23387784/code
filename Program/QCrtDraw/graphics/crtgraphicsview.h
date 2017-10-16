@@ -25,9 +25,9 @@ public:
     void zoomIn();
     void zoomOut();
 signals:
-    void dragDone();
+    void sigDragDone();
 private:
-    ViewStatus viewStatus;
+    ViewStatus m_viewStatus;
 };
 
 #endif // WMFVIEW_H

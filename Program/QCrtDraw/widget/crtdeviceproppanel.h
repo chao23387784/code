@@ -16,13 +16,15 @@ public:
 signals:
 
 public slots:
-    void onSet();
+    void slotSet();
 private:
-    QPushButton* btnSet;
-    QComboBox* cmbDevTypeList;
-    QLineEdit* editDeviceName;
-    QLineEdit* editDeviceID;
-    CrtDevice* source;
+    QPushButton* m_btnSet;
+    QComboBox* m_cmbDevTypeList;
+    QLineEdit* m_editDeviceName;
+    QLineEdit* m_editDeviceID;
+    QLineEdit* m_editDeviceZone;
+    QLineEdit* m_editDeviceAddress;
+    CrtDevice* m_source;
 };
 
 #endif // CRTDEVICEPROPPANEL_H

@@ -9,12 +9,12 @@
 CrtBackground::CrtBackground(QGraphicsItem *parent)
     :QGraphicsItem(parent)
 {
-    bkImage = NULL;
+    m_bkImage = NULL;
 }
 
 CrtBackground::~CrtBackground()
 {
-    SAFE_DELETE(bkImage);
+    SAFE_DELETE(m_bkImage);
 }
 
 QRectF CrtBackground::boundingRect() const
@@ -27,7 +27,7 @@ void CrtBackground::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    if(bkImage == NULL)
+    if(m_bkImage == NULL)
     {
         Libwmf::WmfPainterBackend backend(painter,m_wmfSize/*QSizeF(80,80)*/);
         backend.load(m_wmfFile);
@@ -38,7 +38,7 @@ void CrtBackground::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     else
     {
         //painter->save();
-        painter->drawImage(0,0,*bkImage);
+        painter->drawImage(0,0,*m_bkImage);
         //painter->restore();
     }
 }
@@ -61,7 +61,7 @@ void CrtBackground::initWmfFile()
 
 void CrtBackground::setWmfFile(const QString& wmfFile)
 {
-    SAFE_DELETE(bkImage);
+    SAFE_DELETE(m_bkImage);
     m_wmfFile = wmfFile;
     if(!QFileInfo(m_wmfFile).suffix().compare("wmf"))
     {
@@ -69,7 +69,7 @@ void CrtBackground::setWmfFile(const QString& wmfFile)
     }
     else
     {
-        bkImage = new QImage(m_wmfFile);
-        m_wmfSize = QSizeF((qreal)bkImage->width(),(qreal)bkImage->height());
+        m_bkImage = new QImage(m_wmfFile);
+        m_wmfSize = QSizeF((qreal)m_bkImage->width(),(qreal)m_bkImage->height());
     }
 }

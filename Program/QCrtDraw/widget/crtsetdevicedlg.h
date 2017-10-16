@@ -3,10 +3,10 @@
 #include <QWidget>
 #include <QComboBox>
 #include <QLabel>
-#include <QTableView>
 #include "crtsetdevicemodel.h"
 #include "crtsetdeviceproxymodel.h"
 #include "crtobject.h"
+#include "crtsetdeviceview.h"
 
 class CrtSetDeviceDlg : public QWidget
 {
@@ -18,16 +18,16 @@ public:
     void releaseData();
     CrtObject* getCurrentObject();
 protected slots:
-    void OnComboItemSelected();
-    void OnDragDone();
+    void slotComboItemSelected();
+    void slotDragDone();
 private:
-    QComboBox* cmbProject;
-    QComboBox* cmbController;
-    QComboBox* cmbLoop;
-    QComboBox* cmbDeviceType;
-    QTableView* DeviceTable;
-    CrtSetDeviceModel* model;
-    CrtSetDeviceProxyModel* proxymodel;
+    QComboBox* m_cmbProject;
+    QComboBox* m_cmbController;
+    QComboBox* m_cmbLoop;
+    QComboBox* m_cmbDeviceType;
+    CrtSetDeviceView* m_DeviceTable;
+    CrtSetDeviceModel* m_model;
+    CrtSetDeviceProxyModel* m_proxymodel;
 };
 
 #endif // CRTSETDEVICEDLG_H

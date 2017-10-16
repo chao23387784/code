@@ -19,18 +19,18 @@ public:
 signals:
 
 public slots:
-    void onSet();
+    void slotSet();
 private:
-    QLineEdit* editControllerID;
-    QLineEdit* editControllerName;
-    QComboBox* cmbControllerType;
-    QComboBox* cmbControllerSystem;
-    QLineEdit* editControllerNetID;
-    CrtPropView* tblLoop;
-    QPushButton* btnSet;
-    CrtController* source;
-    CrtLoopPropModel* model;
-    CrtLoopPropDelegate* delegate;
+    QLineEdit* m_editControllerID;
+    QLineEdit* m_editControllerName;
+    QComboBox* m_cmbControllerType;
+    QComboBox* m_cmbControllerSystem;
+    QLineEdit* m_editControllerNetID;
+    CrtPropView* m_tblLoop;
+    QPushButton* m_btnSet;
+    CrtController* m_source;
+    CrtLoopPropModel* m_model;
+    CrtLoopPropDelegate* m_delegate;
 };
 
 #endif // CRTCONTROLLERPROPERTYPANEL_H

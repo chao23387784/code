@@ -20,7 +20,7 @@ public:
     virtual QList<int> getAvaliableChildsID(int type = 0);
     virtual bool isChildIDAvaliable(int id,int type = 0);
 public:
-    int maxDeviceID;
+    int m_nMaxDeviceID;
     QList<CrtObject*> m_lstDevice;
 };
 

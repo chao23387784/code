@@ -4,7 +4,7 @@
 CrtBuilding::CrtBuilding(CrtObject *parent) : CrtObject(parent)
 {
     setType("building");
-    maxLayerID = 80;
+    m_nMaxLayerID = 80;
 }
 
 CrtBuilding::~CrtBuilding()
@@ -62,10 +62,10 @@ int CrtBuilding::getAvaliableChildID(int type)
     QList<int> lstID;
     foreach(CrtObject* obj,m_lstLayer)
     {
-        lstID<<obj->ID();
+        lstID<<obj->getID();
     }
 
-    for(int i=1;i<=maxLayerID;i++)
+    for(int i=1;i<=m_nMaxLayerID;i++)
     {
         if(!lstID.contains(i))
         {
@@ -84,10 +84,10 @@ QList<int> CrtBuilding::getAvaliableChildsID(int type)
     QList<int> lstID;
     foreach(CrtObject* obj,m_lstLayer)
     {
-        lstID<<obj->ID();
+        lstID<<obj->getID();
     }
 
-    for(int i=1;i<=maxLayerID;i++)
+    for(int i=1;i<=m_nMaxLayerID;i++)
     {
         if(!lstID.contains(i))
         {
@@ -103,11 +103,11 @@ bool CrtBuilding::isChildIDAvaliable(int id, int type)
     Q_UNUSED(type);
     bool bRes = true;
 
-    if(id > maxLayerID)return false;
+    if(id > m_nMaxLayerID)return false;
 
     foreach(CrtObject* obj,m_lstLayer)
     {
-        if(obj->ID() == id)
+        if(obj->getID() == id)
         {
             bRes = false;
             break;

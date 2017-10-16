@@ -13,17 +13,17 @@ public:
     ~CrtTwoWayToolButton();
 
 signals:
-    void quickpress();
-    void holdpress();
+    void sigQuickPress();
+    void sigHoldPress();
 private slots:
-    void OnTimeOut();
+    void slotTimeOut();
     //void OnClick();
 protected:
     void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
     void initTimer();
  private:
-    QTimer* timer;
+    QTimer* m_timer;
 };
 
 #endif // CRTTWOWAYPUSHBUTTON_H

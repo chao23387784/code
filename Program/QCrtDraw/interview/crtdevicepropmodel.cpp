@@ -4,15 +4,15 @@
 
 CrtDevicePropModel::CrtDevicePropModel(QObject *parent):QAbstractItemModel(parent)
 {
-    source = NULL;
+    m_source = NULL;
 }
 
 QModelIndex CrtDevicePropModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if(!hasIndex(row,column,parent) || !source)
+    if(!hasIndex(row,column,parent) || !m_source)
         return QModelIndex();
 
-    return createIndex(row,column,source->childAt(row));
+    return createIndex(row,column,m_source->childAt(row));
 }
 
 QModelIndex CrtDevicePropModel::parent(const QModelIndex &child) const
@@ -48,7 +48,17 @@ QVariant CrtDevicePropModel::headerData(int section, Qt::Orientation orientation
             break;
         case 2:
         {
+            value = tr("Device Zone");
+        }
+            break;
+        case 3:
+        {
             value = tr("Device Type");
+        }
+            break;
+        case 4:
+        {
+            value = tr("Device Address");
         }
             break;
         }
@@ -63,13 +73,13 @@ QVariant CrtDevicePropModel::data(const QModelIndex &index, int role) const
     if(!index.isValid())
         return QVariant();
     CrtDevice* item = static_cast<CrtDevice*>(index.internalPointer());
-    if (role == Qt::DecorationRole && index.column() == 2)
+    if (role == Qt::DecorationRole && index.column() == 3)
     {
         QString strIcon;
-        if(!item->Type().compare("device"))
+        if(!item->getType().compare("device"))
         {
-            strIcon = dynamic_cast<CrtDevice*>(item)->DeviceType();
-            return *(CrtMaster::GetInstance()->DeviceIcon(strIcon));
+            strIcon = dynamic_cast<CrtDevice*>(item)->getDeviceType();
+            return *(CrtMaster::getInstance()->getDeviceIcon(strIcon));
         }
         return QVariant();
     }
@@ -80,17 +90,27 @@ QVariant CrtDevicePropModel::data(const QModelIndex &index, int role) const
         {
         case 0:
         {
-            value = item->ID();
+            value = item->getID();
         }
             break;
         case 1:
         {
-            value = item->Name();
+            value = item->getName();
         }
             break;
         case 2:
         {
-            value = item->DeviceType();
+            value = item->getDeviceZone();
+        }
+            break;
+        case 3:
+        {
+            value = item->getDeviceType();
+        }
+            break;
+        case 4:
+        {
+            value = item->getDeviceAddress();
         }
             break;
         }
@@ -118,12 +138,24 @@ bool CrtDevicePropModel::setData(const QModelIndex &index, const QVariant &value
         if(!value.toString().trimmed().isEmpty())
             item->setName(value.toString());
         else
-            item->setName(QString(tr("NT-Device%1")).arg(item->ID()));
+            item->setName(QString(tr("NT-Device%1")).arg(item->getID()));
     }
         break;
     case 2:
     {
+        if(value.toInt() >= 0)
+            item->setDeviceZone(value.toInt());
+    }
+        break;
+    case 3:
+    {
         item->setDeviceType(value.toString());
+    }
+        break;
+    case 4:
+    {
+        if(!value.toString().trimmed().isEmpty())
+            item->setDeviceAddress(value.toString());
     }
         break;
     }
@@ -134,14 +166,14 @@ bool CrtDevicePropModel::setData(const QModelIndex &index, const QVariant &value
 int CrtDevicePropModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    if(!source)return 0;
-    return source->childCount();
+    if(!m_source)return 0;
+    return m_source->childCount();
 }
 
 int CrtDevicePropModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return 3;
+    return 5;
 }
 
 bool CrtDevicePropModel::load(CrtObject *obj)
@@ -149,7 +181,7 @@ bool CrtDevicePropModel::load(CrtObject *obj)
     if(obj != NULL)
     {
         beginResetModel();
-        source = dynamic_cast<CrtLoop*>(obj);
+        m_source = dynamic_cast<CrtLoop*>(obj);
         endResetModel();
         return true;
     }
@@ -158,10 +190,10 @@ bool CrtDevicePropModel::load(CrtObject *obj)
 
 void CrtDevicePropModel::unload()
 {
-    if(source)
+    if(m_source)
     {
         beginResetModel();
-        source = NULL;
+        m_source = NULL;
         endResetModel();
     }
 }

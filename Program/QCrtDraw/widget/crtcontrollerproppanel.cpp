@@ -4,59 +4,60 @@
 #include "crtcontroller.h"
 #include "crtmaster.h"
 #include <QValidator>
-#include <QHeaderView>\
+#include <QHeaderView>
 #include "crtmaster.h"
+
 
 CrtControllerPropPanel::CrtControllerPropPanel(QWidget *parent) : QWidget(parent)
 {
     QLabel* labID = new QLabel(tr("Controller ID:"),this);
-    editControllerID = new QLineEdit(this);
-    editControllerID->setReadOnly(true);
+    m_editControllerID = new QLineEdit(this);
+    m_editControllerID->setReadOnly(true);
     //editControllerID->setValidator(new QIntValidator(1,999,this));
 
     QLabel* labName = new QLabel(tr("Controller Name:"),this);
-    editControllerName = new QLineEdit(this);
-    editControllerName->setMaxLength(256);
+    m_editControllerName = new QLineEdit(this);
+    m_editControllerName->setMaxLength(256);
 
     QLabel* labNetID = new QLabel(tr("NetID:"),this);
-    editControllerNetID = new QLineEdit(this);
-    editControllerNetID->setValidator(new QIntValidator(0,999,this));
+    m_editControllerNetID = new QLineEdit(this);
+    m_editControllerNetID->setValidator(new QIntValidator(0,999,this));
 
     QLabel* labType = new QLabel(tr("Controller Type:"),this);
-    cmbControllerType = new QComboBox(this);
-    cmbControllerType->addItems(*(CrtMaster::GetInstance()->ControllerType()));
+    m_cmbControllerType = new QComboBox(this);
+    m_cmbControllerType->addItems(*(CrtMaster::getInstance()->getControllerType()));
 
     QLabel* labSystem = new QLabel(tr("System Type:"),this);
-    cmbControllerSystem = new QComboBox(this);
-    cmbControllerSystem->addItems(*(CrtMaster::GetInstance()->SystemType()));
+    m_cmbControllerSystem = new QComboBox(this);
+    m_cmbControllerSystem->addItems(*(CrtMaster::getInstance()->getSystemType()));
 
-    btnSet = new QPushButton(tr("set"),this);
+    m_btnSet = new QPushButton(tr("set"),this);
 
-    tblLoop = new CrtPropView(this);
+    m_tblLoop = new CrtPropView(this);
 
     QHBoxLayout* layoutTop1 = new QHBoxLayout(this);
     layoutTop1->addWidget(labID);
-    layoutTop1->addWidget(editControllerID);
+    layoutTop1->addWidget(m_editControllerID);
     layoutTop1->addWidget(labName);
-    layoutTop1->addWidget(editControllerName);
+    layoutTop1->addWidget(m_editControllerName);
     layoutTop1->addWidget(labNetID);
-    layoutTop1->addWidget(editControllerNetID);
+    layoutTop1->addWidget(m_editControllerNetID);
 
     QWidget* layoutContainer1 = new QWidget(this);
     layoutContainer1->setLayout(layoutTop1);
 
     QHBoxLayout* layoutTop2 = new QHBoxLayout(this);
     layoutTop2->addWidget(labType);
-    layoutTop2->addWidget(cmbControllerType);
+    layoutTop2->addWidget(m_cmbControllerType);
     layoutTop2->addWidget(labSystem);
-    layoutTop2->addWidget(cmbControllerSystem);
+    layoutTop2->addWidget(m_cmbControllerSystem);
     layoutTop2->addStretch(2);
-    layoutTop2->addWidget(btnSet);
+    layoutTop2->addWidget(m_btnSet);
     layoutTop2->setStretchFactor(labType,1);
-    layoutTop2->setStretchFactor(cmbControllerType,3);
+    layoutTop2->setStretchFactor(m_cmbControllerType,3);
     layoutTop2->setStretchFactor(labSystem,1);
-    layoutTop2->setStretchFactor(cmbControllerSystem,3);
-    layoutTop2->setStretchFactor(btnSet,1);
+    layoutTop2->setStretchFactor(m_cmbControllerSystem,3);
+    layoutTop2->setStretchFactor(m_btnSet,1);
 
     QWidget* layoutContainer2 = new QWidget(this);
     layoutContainer2->setLayout(layoutTop2);
@@ -64,74 +65,74 @@ CrtControllerPropPanel::CrtControllerPropPanel(QWidget *parent) : QWidget(parent
     QVBoxLayout* layoutMain = new QVBoxLayout(this);
     layoutMain->addWidget(layoutContainer1);
     layoutMain->addWidget(layoutContainer2);
-    layoutMain->addWidget(tblLoop);
+    layoutMain->addWidget(m_tblLoop);
 
     setLayout(layoutMain);
 
-    source = NULL;
+    m_source = NULL;
 
-    connect(btnSet,SIGNAL(clicked(bool)),this,SLOT(onSet()));
+    connect(m_btnSet,SIGNAL(clicked(bool)),this,SLOT(slotSet()));
 
-    model = new CrtLoopPropModel(this);
-    tblLoop->setModel(model);
-    delegate = new CrtLoopPropDelegate(this);
-    tblLoop->setItemDelegate(delegate);
+    m_model = new CrtLoopPropModel(this);
+    m_tblLoop->setModel(m_model);
+    m_delegate = new CrtLoopPropDelegate(this);
+    m_tblLoop->setItemDelegate(m_delegate);
 
-    tblLoop->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_tblLoop->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    connect(delegate,SIGNAL(valueChanged(QString)),tblLoop,SLOT(itemDataChanged(QString)));
+    connect(m_delegate,SIGNAL(sigValueChanged(QString)),m_tblLoop,SLOT(slotItemDataChanged(QString)));
 }
 
 void CrtControllerPropPanel::initPanel(CrtObject *obj)
 {
-    if(!obj || obj->Type().compare("controller") || !model)return;
+    if(!obj || obj->getType().compare("controller") || !m_model)return;
 
-    source = dynamic_cast<CrtController*>(obj);
+    m_source = dynamic_cast<CrtController*>(obj);
 
-    editControllerID->setText(QString("%1").arg(source->ID()));
-    editControllerName->setText(source->Name());
-    editControllerNetID->setText(QString("%1").arg(source->NetID()));
+    m_editControllerID->setText(QString("%1").arg(m_source->getID()));
+    m_editControllerName->setText(m_source->getName());
+    m_editControllerNetID->setText(QString("%1").arg(m_source->getNetID()));
 
-    int nIndex = cmbControllerType->findText(source->ControllerType());
-    nIndex == -1 ? cmbControllerType->setCurrentText(source->ControllerType()) :
-                   cmbControllerType->setCurrentIndex(nIndex);
+    int nIndex = m_cmbControllerType->findText(m_source->getControllerType());
+    nIndex == -1 ? m_cmbControllerType->setCurrentText(m_source->getControllerType()) :
+                   m_cmbControllerType->setCurrentIndex(nIndex);
 
-    nIndex = cmbControllerSystem->findText(source->SystemType());
-    nIndex == -1 ? cmbControllerSystem->setCurrentText(source->SystemType()) :
-                   cmbControllerSystem->setCurrentIndex(nIndex);
+    nIndex = m_cmbControllerSystem->findText(m_source->getSystemType());
+    nIndex == -1 ? m_cmbControllerSystem->setCurrentText(m_source->getSystemType()) :
+                   m_cmbControllerSystem->setCurrentIndex(nIndex);
 
-    model->unload();
-    model->load(obj);
+    m_model->unload();
+    m_model->load(obj);
 }
 
-void CrtControllerPropPanel::onSet()
+void CrtControllerPropPanel::slotSet()
 {
-    if(!source)return;
+    if(!m_source)return;
 
     /*if(!editControllerID->text().trimmed().isEmpty())
     {
         source->setID(editControllerID->text().trimmed().toInt());
     }*/
 
-    if(!editControllerName->text().trimmed().isEmpty())
+    if(!m_editControllerName->text().trimmed().isEmpty())
     {
-        source->setName(editControllerName->text().trimmed());
+        m_source->setName(m_editControllerName->text().trimmed());
     }else
     {
-        source->setName(QString(tr("NT-Controller%1")).arg(source->ID()));
+        m_source->setName(QString(tr("NT-Controller%1")).arg(m_source->getID()));
     }
 
-    if(!editControllerNetID->text().trimmed().isEmpty())
+    if(!m_editControllerNetID->text().trimmed().isEmpty())
     {
-        source->setNetID(editControllerNetID->text().trimmed().toInt());
+        m_source->setNetID(m_editControllerNetID->text().trimmed().toInt());
     }else
     {
-        source->setNetID(0);
+        m_source->setNetID(0);
     }
 
-    source->setControllerType(cmbControllerType->currentText());
+    m_source->setControllerType(m_cmbControllerType->currentText());
 
-    source->setSystemType(cmbControllerSystem->currentText());
+    m_source->setSystemType(m_cmbControllerSystem->currentText());
 
-    CrtMaster::GetInstance()->ProjectTreeView()->updateItem(source);
+    CrtMaster::getInstance()->getProjectTreeView()->slotUpdateItem(m_source);
 }

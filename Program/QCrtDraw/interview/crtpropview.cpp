@@ -8,13 +8,13 @@ CrtPropView::CrtPropView(QWidget *parent):QTableView(parent)
     verticalHeader()->setVisible(false);
 }
 
-void CrtPropView::itemDataChanged(QString value)
+void CrtPropView::slotItemDataChanged(QString value)
 {
     foreach(QModelIndex index,selectionModel()->selectedIndexes())
     {
         model()->setData(index,value);
         update(index);
-        CrtMaster::GetInstance()->ProjectTreeView()->updateItem(static_cast<CrtObject*>(index.internalPointer()));
+        CrtMaster::getInstance()->getProjectTreeView()->slotUpdateItem(static_cast<CrtObject*>(index.internalPointer()));
     }
 }
 

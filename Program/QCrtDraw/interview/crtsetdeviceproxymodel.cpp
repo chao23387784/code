@@ -3,40 +3,40 @@
 
 CrtSetDeviceProxyModel::CrtSetDeviceProxyModel(QObject *parent):QSortFilterProxyModel(parent)
 {
-    project_id = -1;
-    controller_id = -1;
-    loop_id = -1;
-    device_type = "";
+    m_nProject_ID = -1;
+    m_nController_ID = -1;
+    m_nLoop_ID = -1;
+    m_strDevType = "";
 }
 
 void CrtSetDeviceProxyModel::setFilter(QVariant filter, int type)
 {
     if(type == 0)
     {
-        project_id = filter.toInt();
-        controller_id = -1;
-        loop_id = -1;
+        m_nProject_ID = filter.toInt();
+        m_nController_ID = -1;
+        m_nLoop_ID = -1;
 
     }else if(type == 1)
     {
-        controller_id = filter.toInt();
-        loop_id = -1;
+        m_nController_ID = filter.toInt();
+        m_nLoop_ID = -1;
     }else if(type == 2)
     {
-       loop_id = filter.toInt();
+       m_nLoop_ID = filter.toInt();
     }else if(type == 3)
     {
-        device_type = filter.toString();
+        m_strDevType = filter.toString();
     }
     invalidateFilter();
 }
 
 void CrtSetDeviceProxyModel::clearFilter()
 {
-    project_id = -1;
-    controller_id = -1;
-    loop_id = -1;
-    device_type = "";
+    m_nProject_ID = -1;
+    m_nController_ID = -1;
+    m_nLoop_ID = -1;
+    m_strDevType = "";
     invalidateFilter();
 }
 
@@ -53,10 +53,10 @@ bool CrtSetDeviceProxyModel::filterAcceptsRow(int source_row, const QModelIndex 
 
     CrtDevice* device = static_cast<CrtDevice*>(index.internalPointer());
 
-    if((project_id == -1 || device->Parent()->Parent()->Parent()->ID() == project_id) &&
-            (controller_id == -1 || device->Parent()->Parent()->ID() == controller_id) &&
-            (loop_id == -1 || device->Parent()->ID() == loop_id) &&
-            (device_type.isEmpty() || !device->DeviceType().compare(device_type)))
+    if((m_nProject_ID == -1 || device->getParent()->getParent()->getParent()->getID() == m_nProject_ID) &&
+            (m_nController_ID == -1 || device->getParent()->getParent()->getID() == m_nController_ID) &&
+            (m_nLoop_ID == -1 || device->getParent()->getID() == m_nLoop_ID) &&
+            (m_strDevType.isEmpty() || !device->getDeviceType().compare(m_strDevType)))
     {
         if(!device->isOnMap())
             return true;

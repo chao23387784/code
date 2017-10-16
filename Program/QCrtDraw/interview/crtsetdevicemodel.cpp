@@ -11,10 +11,10 @@ CrtSetDeviceModel::CrtSetDeviceModel(QObject *parent):QAbstractItemModel(parent)
 
 QModelIndex CrtSetDeviceModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if(!hasIndex(row,column,parent) || source.isEmpty())
+    if(!hasIndex(row,column,parent) || m_source.isEmpty())
         return QModelIndex();
 
-    return createIndex(row,column,source.at(row));
+    return createIndex(row,column,m_source.at(row));
 }
 
 QModelIndex CrtSetDeviceModel::parent(const QModelIndex &child) const
@@ -78,10 +78,10 @@ QVariant CrtSetDeviceModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DecorationRole && index.column() == 4)
     {
         QString strIcon;
-        if(!item->Type().compare("device"))
+        if(!item->getType().compare("device"))
         {
-            strIcon = dynamic_cast<CrtDevice*>(item)->DeviceType();
-            return *(CrtMaster::GetInstance()->DeviceIcon(strIcon));
+            strIcon = dynamic_cast<CrtDevice*>(item)->getDeviceType();
+            return *(CrtMaster::getInstance()->getDeviceIcon(strIcon));
         }
         return QVariant();
     }
@@ -92,27 +92,27 @@ QVariant CrtSetDeviceModel::data(const QModelIndex &index, int role) const
         {
         case 0:
         {
-            value = item->Parent()->Parent()->Parent()->ID();
+            value = item->getParent()->getParent()->getParent()->getID();
         }
             break;
         case 1:
         {
-            value = item->Parent()->Parent()->ID();
+            value = item->getParent()->getParent()->getID();
         }
             break;
         case 2:
         {
-            value = item->Parent()->ID();
+            value = item->getParent()->getID();
         }
             break;
         case 3:
         {
-            value = item->ID();
+            value = item->getID();
         }
             break;
         case 4:
         {
-            value = item->DeviceType();
+            value = item->getDeviceType();
         }
             break;
         }
@@ -121,30 +121,30 @@ QVariant CrtSetDeviceModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-QMimeData *CrtSetDeviceModel::mimeData(const QModelIndexList &indexes) const
-{
-    if (indexes.count() > 0)
-     {
-        QByteArray itemData;
-        QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+//QMimeData *CrtSetDeviceModel::mimeData(const QModelIndexList &indexes) const
+//{
+//    if (indexes.count() > 0)
+//     {
+//        QByteArray itemData;
+//        QDataStream dataStream(&itemData, QIODevice::WriteOnly);
 
-        CrtObject* node = (CrtObject*)indexes.at(0).internalPointer();
-        if (node && !node->Type().compare("device") && !dynamic_cast<CrtDevice*>(node)->isOnMap())
-        {
-            dataStream << reinterpret_cast<qlonglong>(node);
-            QMimeData *data = new QMimeData;
-            data->setData("project/items",itemData);
-            return data;
-        }
-     }
-    return NULL;
-}
+//        CrtObject* node = (CrtObject*)indexes.at(0).internalPointer();
+//        if (node && !node->getType().compare("device") && !dynamic_cast<CrtDevice*>(node)->isOnMap())
+//        {
+//            dataStream << reinterpret_cast<qlonglong>(node);
+//            QMimeData *data = new QMimeData;
+//            data->setData("project/items",itemData);
+//            return data;
+//        }
+//     }
+//    return NULL;
+//}
 
 int CrtSetDeviceModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    if(source.isEmpty())return 0;
-    return source.count();
+    if(m_source.isEmpty())return 0;
+    return m_source.count();
 }
 
 int CrtSetDeviceModel::columnCount(const QModelIndex &parent) const
@@ -154,13 +154,13 @@ int CrtSetDeviceModel::columnCount(const QModelIndex &parent) const
 
 bool CrtSetDeviceModel::load(CrtProject *obj)
 {
-    source.clear();
+    m_source.clear();
     beginResetModel();
     foreach(CrtObject* controller,obj->m_lstController)
     {
         foreach(CrtObject* loop,dynamic_cast<CrtController*>(controller)->m_lstLoop)
         {
-            source.append(dynamic_cast<CrtLoop*>(loop)->m_lstDevice);
+            m_source.append(dynamic_cast<CrtLoop*>(loop)->m_lstDevice);
         }
     }
 

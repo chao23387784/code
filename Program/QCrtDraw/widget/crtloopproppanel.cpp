@@ -8,71 +8,71 @@
 CrtLoopPropPanel::CrtLoopPropPanel(QWidget *parent) : QWidget(parent)
 {
     QLabel* lab = new QLabel(tr("Loop ID:"),this);
-    editLoopID = new QLineEdit(this);
-    editLoopID->setReadOnly(true);
+    m_editLoopID = new QLineEdit(this);
+    m_editLoopID->setReadOnly(true);
     //editLoopID->setValidator(new QIntValidator(1,99,this));
     QLabel* labName = new QLabel(tr("Loop Name:"),this);
-    editLoopName = new QLineEdit(this);
-    editLoopName->setMaxLength(256);
-    tblDevice = new CrtPropView(this);
+    m_editLoopName = new QLineEdit(this);
+    m_editLoopName->setMaxLength(256);
+    m_tblDevice = new CrtPropView(this);
 
-    btnSet = new QPushButton(tr("set"),this);
+    m_btnSet = new QPushButton(tr("set"),this);
 
     QHBoxLayout* layoutTop = new QHBoxLayout(this);
     layoutTop->addWidget(lab);
-    layoutTop->addWidget(editLoopID);
+    layoutTop->addWidget(m_editLoopID);
     layoutTop->addWidget(labName);
-    layoutTop->addWidget(editLoopName);
-    layoutTop->addWidget(btnSet);
+    layoutTop->addWidget(m_editLoopName);
+    layoutTop->addWidget(m_btnSet);
 
     QWidget* layoutContainer = new QWidget(this);
     layoutContainer->setLayout(layoutTop);
 
     QVBoxLayout* layoutMain = new QVBoxLayout(this);
     layoutMain->addWidget(layoutContainer);
-    layoutMain->addWidget(tblDevice);
+    layoutMain->addWidget(m_tblDevice);
 
     setLayout(layoutMain);
 
-    source = NULL;
+    m_source = NULL;
 
-    connect(btnSet,SIGNAL(clicked(bool)),this,SLOT(onSet()));
+    connect(m_btnSet,SIGNAL(clicked(bool)),this,SLOT(slotSet()));
 
-    model = new CrtDevicePropModel(this);
-    tblDevice->setModel(model);
-    delegate = new CrtDevicePropDelegate(this);
-    tblDevice->setItemDelegate(delegate);
+    m_model = new CrtDevicePropModel(this);
+    m_tblDevice->setModel(m_model);
+    m_delegate = new CrtDevicePropDelegate(this);
+    m_tblDevice->setItemDelegate(m_delegate);
 
-    tblDevice->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_tblDevice->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    connect(delegate,SIGNAL(valueChanged(QString)),tblDevice,SLOT(itemDataChanged(QString)));
+    connect(m_delegate,SIGNAL(sigValueChanged(QString)),m_tblDevice,SLOT(slotItemDataChanged(QString)));
 }
 
 void CrtLoopPropPanel::initPanel(CrtObject *obj)
 {
-    if(obj->Type().compare("loop") || !model)return;
+    if(obj->getType().compare("loop") || !m_model)return;
 
-    source = dynamic_cast<CrtLoop*>(obj);
+    m_source = dynamic_cast<CrtLoop*>(obj);
 
-    editLoopID->setText(QString("%1").arg(source->ID()));
-    editLoopName->setText(source->Name());
+    m_editLoopID->setText(QString("%1").arg(m_source->getID()));
+    m_editLoopName->setText(m_source->getName());
 
-    model->unload();
-    model->load(obj);
+    m_model->unload();
+    m_model->load(obj);
 }
 
-void CrtLoopPropPanel::onSet()
+void CrtLoopPropPanel::slotSet()
 {
-    if(!source)return;
+    if(!m_source)return;
 
     /*if(!editLoopID->text().trimmed().isEmpty())
         source->setID(editLoopID->text().trimmed().toInt());*/
 
-    if(!editLoopName->text().trimmed().isEmpty())
-        source->setName(editLoopName->text().trimmed());
+    if(!m_editLoopName->text().trimmed().isEmpty())
+        m_source->setName(m_editLoopName->text().trimmed());
     else
-        source->setName(QString(tr("NT-Loop%1")).arg(source->ID()));
+        m_source->setName(QString(tr("NT-Loop%1")).arg(m_source->getID()));
 
-    CrtMaster::GetInstance()->ProjectTreeView()->updateItem(source);
+    CrtMaster::getInstance()->getProjectTreeView()->slotUpdateItem(m_source);
 }
 

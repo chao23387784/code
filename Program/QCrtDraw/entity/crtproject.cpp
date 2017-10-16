@@ -4,8 +4,8 @@
 CrtProject::CrtProject(CrtObject *parent) : CrtObject(parent)
 {
     setType("project");
-    maxControllerID = 128;
-    maxBuildingID = 80;
+    m_nMaxControllerID = 128;
+    m_nMaxBuildingID = 80;
 }
 
 CrtProject::~CrtProject()
@@ -25,12 +25,12 @@ CrtProject::~CrtProject()
 
 void CrtProject::addChild(CrtObject *child)
 {
-    if(!child->Type().compare("controller"))
+    if(!child->getType().compare("controller"))
     {
         if(m_lstController.contains(child))return;
         m_lstController.append(child);
     }
-    else if(!child->Type().compare("building"))
+    else if(!child->getType().compare("building"))
     {
         if(m_lstBuilding.contains(child))return;
         m_lstBuilding.append(child);
@@ -78,11 +78,11 @@ void CrtProject::removeChild(int nIndex, int type)
 int CrtProject::indexOf(CrtObject *child)
 {
     if(!child)return -1;
-    if(!child->Type().compare("controller"))
+    if(!child->getType().compare("controller"))
     {
         return m_lstController.indexOf(child);
     }
-    else if(!child->Type().compare("building"))
+    else if(!child->getType().compare("building"))
     {
         return m_lstBuilding.indexOf(child);
     }
@@ -112,10 +112,10 @@ int CrtProject::getAvaliableChildID(int type)
     {
         foreach(CrtObject* obj,m_lstController)
         {
-            lstID<<obj->ID();
+            lstID<<obj->getID();
         }
 
-        for(int i=1;i<=maxControllerID;i++)
+        for(int i=1;i<=m_nMaxControllerID;i++)
         {
             if(!lstID.contains(i))
             {
@@ -128,10 +128,10 @@ int CrtProject::getAvaliableChildID(int type)
     {
         foreach(CrtObject* obj,m_lstBuilding)
         {
-            lstID<<obj->ID();
+            lstID<<obj->getID();
         }
 
-        for(int i=1;i<=maxBuildingID;i++)
+        for(int i=1;i<=m_nMaxBuildingID;i++)
         {
             if(!lstID.contains(i))
             {
@@ -151,10 +151,10 @@ QList<int> CrtProject::getAvaliableChildsID(int type)
     {
         foreach(CrtObject* obj,m_lstController)
         {
-            lstID<<obj->ID();
+            lstID<<obj->getID();
         }
 
-        for(int i=1;i<=maxControllerID;i++)
+        for(int i=1;i<=m_nMaxControllerID;i++)
         {
             if(!lstID.contains(i))
             {
@@ -166,10 +166,10 @@ QList<int> CrtProject::getAvaliableChildsID(int type)
     {
         foreach(CrtObject* obj,m_lstBuilding)
         {
-            lstID<<obj->ID();
+            lstID<<obj->getID();
         }
 
-        for(int i=1;i<=maxBuildingID;i++)
+        for(int i=1;i<=m_nMaxBuildingID;i++)
         {
             if(!lstID.contains(i))
             {
@@ -185,11 +185,11 @@ bool CrtProject::isChildIDAvaliable(int id, int type)
     bool bRes = true;
     if(type == 0)
     {
-        if(id > maxControllerID)return false;
+        if(id > m_nMaxControllerID)return false;
 
         foreach(CrtObject* obj,m_lstController)
         {
-            if(obj->ID() == id)
+            if(obj->getID() == id)
             {
                 bRes = false;
                 break;
@@ -198,11 +198,11 @@ bool CrtProject::isChildIDAvaliable(int id, int type)
     }
     else if(type == 1)
     {
-        if(id > maxBuildingID)return false;
+        if(id > m_nMaxBuildingID)return false;
 
         foreach(CrtObject* obj,m_lstBuilding)
         {
-            if(obj->ID() == id)
+            if(obj->getID() == id)
             {
                 bRes = false;
                 break;

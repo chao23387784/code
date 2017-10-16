@@ -23,8 +23,8 @@ public:
     virtual bool isChildIDAvaliable(int id,int type = 0);
 
 public:
-    int maxControllerID;
-    int maxBuildingID;
+    int m_nMaxControllerID;
+    int m_nMaxBuildingID;
     QList<CrtObject*> m_lstController;
     QList<CrtObject*> m_lstBuilding;
 };

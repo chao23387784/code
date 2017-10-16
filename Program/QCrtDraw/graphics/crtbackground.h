@@ -15,7 +15,7 @@ public:
 private:
     QString m_wmfFile;
     QSizeF m_wmfSize;
-    QImage* bkImage;
+    QImage* m_bkImage;
     //QSizeF m_viewSize;
 };
 

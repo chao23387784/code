@@ -15,14 +15,14 @@ class DataManager
 public:
     DataManager();
     ~DataManager();
-    void InitEngine(QString dbPath = "NtCrt.db",QString userName = "neat",QString password = "123");
+    void initEngine(QString dbPath = "NtCrt.db",QString userName = "neat",QString password = "123");
     bool load(CrtProject* proj);
     bool save(CrtProject* proj);
 private:
     void loadObject(CrtObject* obj);
     bool saveObject(CrtObject* obj);
 private:
-    SqliteEngine* engine;
+    SqliteEngine* m_engine;
 };
 
 #endif // ENTITYMANAGER_H

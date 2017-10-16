@@ -23,14 +23,14 @@ public:
     virtual bool isChildIDAvaliable(int id,int type = 0){Q_UNUSED(id);Q_UNUSED(type);return false;}
 
     //void setScene(CrtScene* s);
-    CrtGraphicsScene* Scene();
+    CrtGraphicsScene* getScene();
     void setBackground(QString strPath);
-    QString FilePath(){return filePath;}
+    QString getFilePath(){return m_strFilePath;}
 private:
-    CrtGraphicsScene* scene;
-    QString filePath;
+    CrtGraphicsScene* m_scene;
+    QString m_strFilePath;
 public:
-    int maxDeviceCount;
+    int m_nMaxDeviceCount;
     QList<CrtObject*> m_lstDevice;
 };
 

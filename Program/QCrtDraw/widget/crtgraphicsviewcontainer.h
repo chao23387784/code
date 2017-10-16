@@ -13,9 +13,9 @@ public:
     CrtGraphicsViewContainer(CrtGraphicsView* view,QToolBar* toolbar,QWidget *parent=0);
     void setCurrentPanel(CrtObject* obj);
 private:
-    CrtGraphicsView* view;
-    CrtWelcomWidget* welcom;
-    QToolBar* toolbar;
+    CrtGraphicsView* m_view;
+    CrtWelcomWidget* m_welcom;
+    QToolBar* m_toolbar;
 };
 
 #endif // CRTVIEWCONTAINER_H

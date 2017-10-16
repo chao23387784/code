@@ -14,26 +14,26 @@
 class CrtMaster
 {
 public:
-    static CrtMaster* GetInstance();
-    void Destroy();
+    static CrtMaster* getInstance();
+    void destroy();
     void setProject(CrtProject* proj);
-    CrtProject* Project(){return project;}
+    CrtProject* getProject(){return m_project;}
     void setManager(DataManager* manager);
-    DataManager* Manager(){return manager;}
+    DataManager* getManager(){return m_manager;}
     void initDeviceIcon();
     void initTreeIcon();
     void initSystemType();
     void initControllerType();
-    QIcon* DeviceIcon(QString strDeviceType);
-    QIcon* TreeIcon(QString strTreeIconType);
-    const QStringList* ControllerType();
-    const QStringList* SystemType();
-    void ClearDeviceIconHashTable();
+    QIcon* getDeviceIcon(QString strDeviceType);
+    QIcon* getTreeIcon(QString strTreeIconType);
+    const QStringList* getControllerType();
+    const QStringList* getSystemType();
+    void clearDeviceIconHashTable();
     void clearTreeIconHashTable();
     void setPtojectTreeView(CrtTreeView* view);
-    CrtTreeView* ProjectTreeView();
+    CrtTreeView* getProjectTreeView();
     void setMapTreeView(CrtTreeView* view);
-    CrtTreeView* MapTreeView();
+    CrtTreeView* getMapTreeView();
     void setCrtGraphicsView(CrtGraphicsView* view);
     CrtGraphicsView *getCrtGraphicsView();
     void setCrtSetDeviceDlg(CrtSetDeviceDlg* dlg);
@@ -56,12 +56,12 @@ private:
     QStringList* m_lstSystemType;
     QStringList* m_lstControllerType;
     QHash<int,QString> m_lstDevType;
-    CrtProject* project;
-    DataManager* manager;
-    CrtTreeView* treeProjectView;
-    CrtTreeView* treeMapView;
-    CrtGraphicsView* view;
-    CrtSetDeviceDlg* setDeviceDlg;
+    CrtProject* m_project;
+    DataManager* m_manager;
+    CrtTreeView* m_treeProjectView;
+    CrtTreeView* m_treeMapView;
+    CrtGraphicsView* m_view;
+    CrtSetDeviceDlg* m_setDeviceDlg;
     //CrtWelcomWidget* welcomWidget;
 };
 

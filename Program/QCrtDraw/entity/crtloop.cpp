@@ -4,7 +4,7 @@
 CrtLoop::CrtLoop(CrtObject *parent) : CrtObject(parent)
 {
     setType("loop");
-    maxDeviceID = 252;
+    m_nMaxDeviceID = 252;
 }
 
 CrtLoop::~CrtLoop()
@@ -62,10 +62,10 @@ int CrtLoop::getAvaliableChildID(int type)
     QList<int> lstID;
     foreach(CrtObject* obj,m_lstDevice)
     {
-        lstID<<obj->ID();
+        lstID<<obj->getID();
     }
 
-    for(int i=1;i<=maxDeviceID;i++)
+    for(int i=1;i<=m_nMaxDeviceID;i++)
     {
         if(!lstID.contains(i))
         {
@@ -84,10 +84,10 @@ QList<int> CrtLoop::getAvaliableChildsID(int type)
     QList<int> lstID;
     foreach(CrtObject* obj,m_lstDevice)
     {
-        lstID<<obj->ID();
+        lstID<<obj->getID();
     }
 
-    for(int i=1;i<=maxDeviceID;i++)
+    for(int i=1;i<=m_nMaxDeviceID;i++)
     {
         if(!lstID.contains(i))
         {
@@ -103,11 +103,11 @@ bool CrtLoop::isChildIDAvaliable(int id, int type)
     Q_UNUSED(type);
     bool bRes = true;
 
-    if(id > maxDeviceID)return false;
+    if(id > m_nMaxDeviceID)return false;
 
     foreach(CrtObject* obj,m_lstDevice)
     {
-        if(obj->ID() == id)
+        if(obj->getID() == id)
         {
             bRes = false;
             break;

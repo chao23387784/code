@@ -5,10 +5,10 @@
 
 CrtDevice::CrtDevice(CrtObject *parent) : CrtObject(parent)
 {
-    item = NULL;
+    m_item = NULL;
     setType("device");
-    nLayerID = -1;
-    nBuildingID = -1;
+    m_nLayerID = -1;
+    m_nBuildingID = -1;
 }
 
 CrtDevice::~CrtDevice()
@@ -24,27 +24,37 @@ CrtDevice::~CrtDevice()
 
 void CrtDevice::setDeviceType(QString t)
 {
-    strType = t;
-    if(item)
-        item->setImage(QString(":/device/%1.bmp").arg(strType));
+    m_strDevType = t;
+    if(m_item)
+        m_item->setImage(QString(":/device/%1.bmp").arg(m_strDevType));
     //nType =
 }
 
 CrtDeviceItem *CrtDevice::createDeviceItem()
 {
-    if(!item)
+    if(!m_item)
     {
-        QString strImgPath = QString(":/device/%1.bmp").arg(strType);
-        item = new CrtDeviceItem(strImgPath,this);
-        if(item->isPanel())
+        QString strImgPath = QString(":/device/%1.bmp").arg(m_strDevType);
+        m_item = new CrtDeviceItem(strImgPath,this);
+        if(m_item->isPanel())
         {
             return NULL;
         }
     }
-    return item;
+    return m_item;
 }
 
 void CrtDevice::destroyDeviceItem()
 {
-    SAFE_DELETE(item);
+    SAFE_DELETE(m_item);
+}
+
+void CrtDevice::setDeviceAddress(QString a)
+{
+    m_strAddress = a;
+}
+
+void CrtDevice::setDeviceZone(int z)
+{
+    m_nZoneID = z;
 }

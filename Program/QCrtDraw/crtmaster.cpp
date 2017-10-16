@@ -7,8 +7,8 @@ CrtMaster* CrtMaster::m_inst = NULL;
 
 CrtMaster::CrtMaster()
 {
-    project = NULL;
-    manager = NULL;
+    m_project = NULL;
+    m_manager = NULL;
     initDeviceIcon();
     initTreeIcon();
     initSystemType();
@@ -20,19 +20,19 @@ CrtMaster::~CrtMaster()
 
 }
 
-CrtMaster *CrtMaster::GetInstance()
+CrtMaster *CrtMaster::getInstance()
 {
     if(!m_inst)
         m_inst = new CrtMaster();
     return m_inst;
 }
 
-void CrtMaster::Destroy()
+void CrtMaster::destroy()
 {
     clearTreeIconHashTable();
-    ClearDeviceIconHashTable();
-    SAFE_DELETE(project);
-    SAFE_DELETE(manager);
+    clearDeviceIconHashTable();
+    SAFE_DELETE(m_project);
+    SAFE_DELETE(m_manager);
     SAFE_DELETE(m_lstControllerType);
     SAFE_DELETE(m_lstSystemType);
     SAFE_DELETE(m_inst);
@@ -40,14 +40,14 @@ void CrtMaster::Destroy()
 
 void CrtMaster::setProject(CrtProject *proj)
 {
-    SAFE_DELETE(project);
-    project = proj;
+    SAFE_DELETE(m_project);
+    m_project = proj;
 }
 
 void CrtMaster::setManager(DataManager *manager)
 {
-    SAFE_DELETE(this->manager);
-    this->manager = manager;
+    SAFE_DELETE(this->m_manager);
+    this->m_manager = manager;
 }
 
 void CrtMaster::initDeviceIcon()
@@ -98,27 +98,27 @@ void CrtMaster::initControllerType()
     m_lstControllerType->append(QObject::tr("NT8056 Fire Power Monitor"));
 }
 
-QIcon *CrtMaster::DeviceIcon(QString strDeviceType)
+QIcon *CrtMaster::getDeviceIcon(QString strDeviceType)
 {
     return m_lstDevTypeIcon.value(strDeviceType,NULL);
 }
 
-QIcon *CrtMaster::TreeIcon(QString strTreeIconType)
+QIcon *CrtMaster::getTreeIcon(QString strTreeIconType)
 {
     return m_lstTreeIcon.value(strTreeIconType,NULL);
 }
 
-const QStringList *CrtMaster::ControllerType()
+const QStringList *CrtMaster::getControllerType()
 {
     return m_lstControllerType;
 }
 
-const QStringList *CrtMaster::SystemType()
+const QStringList *CrtMaster::getSystemType()
 {
     return m_lstSystemType;
 }
 
-void CrtMaster::ClearDeviceIconHashTable()
+void CrtMaster::clearDeviceIconHashTable()
 {
     foreach(QIcon* icon,m_lstDevTypeIcon.values())
     {
@@ -138,42 +138,42 @@ void CrtMaster::clearTreeIconHashTable()
 
 void CrtMaster::setPtojectTreeView(CrtTreeView *view)
 {
-    treeProjectView = view;
+    m_treeProjectView = view;
 }
 
-CrtTreeView *CrtMaster::ProjectTreeView()
+CrtTreeView *CrtMaster::getProjectTreeView()
 {
-    return treeProjectView;
+    return m_treeProjectView;
 }
 
 void CrtMaster::setMapTreeView(CrtTreeView *view)
 {
-    treeMapView = view;
+    m_treeMapView = view;
 }
 
-CrtTreeView *CrtMaster::MapTreeView()
+CrtTreeView *CrtMaster::getMapTreeView()
 {
-    return treeMapView;
+    return m_treeMapView;
 }
 
 void CrtMaster::setCrtGraphicsView(CrtGraphicsView *view)
 {
-    this->view = view;
+    this->m_view = view;
 }
 
 CrtGraphicsView *CrtMaster::getCrtGraphicsView()
 {
-    return view;
+    return m_view;
 }
 
 void CrtMaster::setCrtSetDeviceDlg(CrtSetDeviceDlg *dlg)
 {
-    setDeviceDlg = dlg;
+    m_setDeviceDlg = dlg;
 }
 
 CrtSetDeviceDlg *CrtMaster::getCrtSetDeviceDlg()
 {
-    return setDeviceDlg;
+    return m_setDeviceDlg;
 }
 
 /*void CrtMaster::setWelcomeWidget(CrtWelcomWidget *welcom)
@@ -189,11 +189,11 @@ CrtWelcomWidget *CrtMaster::WelcomWidget()
 CrtObject *CrtMaster::findProjectObject(int project_id, int controller_id)
 {
     Q_UNUSED(project_id);
-    if(!project)return NULL;
+    if(!m_project)return NULL;
     CrtObject* obj = NULL;
-    foreach(CrtObject* item,project->m_lstController)
+    foreach(CrtObject* item,m_project->m_lstController)
     {
-        if(item->ID() == controller_id)
+        if(item->getID() == controller_id)
         {
             obj = item;
             break;
@@ -206,11 +206,11 @@ CrtObject *CrtMaster::findProjectObject(int project_id, int controller_id)
 CrtObject *CrtMaster::findProjectObject(int project_id, int controller_id, int loop_id)
 {
     Q_UNUSED(project_id);
-    if(!project)return NULL;
+    if(!m_project)return NULL;
     CrtObject* obj = NULL;
-    foreach(CrtObject* item,project->m_lstController)
+    foreach(CrtObject* item,m_project->m_lstController)
     {
-        if(item->ID() == controller_id)
+        if(item->getID() == controller_id)
         {
             obj = item;
             break;
@@ -221,7 +221,7 @@ CrtObject *CrtMaster::findProjectObject(int project_id, int controller_id, int l
 
     foreach(CrtObject* item,dynamic_cast<CrtController*>(obj)->m_lstLoop)
     {
-        if(item->ID() == loop_id)
+        if(item->getID() == loop_id)
         {
             obj = item;
             break;
@@ -234,11 +234,11 @@ CrtObject *CrtMaster::findProjectObject(int project_id, int controller_id, int l
 CrtObject *CrtMaster::findProjectObject(int project_id, int controller_id, int loop_id, int device_id)
 {
     Q_UNUSED(project_id);
-    if(!project)return NULL;
+    if(!m_project)return NULL;
     CrtObject* obj = NULL;
-    foreach(CrtObject* item,project->m_lstController)
+    foreach(CrtObject* item,m_project->m_lstController)
     {
-        if(item->ID() == controller_id)
+        if(item->getID() == controller_id)
         {
             obj = item;
             break;
@@ -249,7 +249,7 @@ CrtObject *CrtMaster::findProjectObject(int project_id, int controller_id, int l
 
     foreach(CrtObject* item,dynamic_cast<CrtController*>(obj)->m_lstLoop)
     {
-        if(item->ID() == loop_id)
+        if(item->getID() == loop_id)
         {
             obj = item;
             break;
@@ -260,7 +260,7 @@ CrtObject *CrtMaster::findProjectObject(int project_id, int controller_id, int l
 
     foreach(CrtObject* item,dynamic_cast<CrtLoop*>(obj)->m_lstDevice)
     {
-        if(item->ID() == device_id)
+        if(item->getID() == device_id)
         {
             obj = item;
             break;
@@ -273,11 +273,11 @@ CrtObject *CrtMaster::findProjectObject(int project_id, int controller_id, int l
 CrtObject *CrtMaster::findMapObject(int project_id, int building_id)
 {
     Q_UNUSED(project_id);
-    if(!project)return NULL;
+    if(!m_project)return NULL;
     CrtObject* obj = NULL;
-    foreach(CrtObject* item,project->m_lstBuilding)
+    foreach(CrtObject* item,m_project->m_lstBuilding)
     {
-        if(item->ID() == building_id)
+        if(item->getID() == building_id)
         {
             obj = item;
             break;
@@ -290,11 +290,11 @@ CrtObject *CrtMaster::findMapObject(int project_id, int building_id)
 CrtObject *CrtMaster::findMapObject(int project_id, int building_id, int layer_id)
 {
     Q_UNUSED(project_id);
-    if(!project)return NULL;
+    if(!m_project)return NULL;
     CrtObject* obj = NULL;
-    foreach(CrtObject* item,project->m_lstBuilding)
+    foreach(CrtObject* item,m_project->m_lstBuilding)
     {
-        if(item->ID() == building_id)
+        if(item->getID() == building_id)
         {
             obj = item;
             break;
@@ -305,7 +305,7 @@ CrtObject *CrtMaster::findMapObject(int project_id, int building_id, int layer_i
 
     foreach(CrtObject* item,dynamic_cast<CrtBuilding*>(obj)->m_lstLayer)
     {
-        if(item->ID() == layer_id)
+        if(item->getID() == layer_id)
         {
             obj = item;
             break;
@@ -318,11 +318,11 @@ CrtObject *CrtMaster::findMapObject(int project_id, int building_id, int layer_i
 CrtObject *CrtMaster::findMapObject(int project_id, int building_id, int layer_id, int device_id)
 {
     Q_UNUSED(project_id);
-    if(!project)return NULL;
+    if(!m_project)return NULL;
     CrtObject* obj = NULL;
-    foreach(CrtObject* item,project->m_lstBuilding)
+    foreach(CrtObject* item,m_project->m_lstBuilding)
     {
-        if(item->ID() == building_id)
+        if(item->getID() == building_id)
         {
             obj = item;
             break;
@@ -333,7 +333,7 @@ CrtObject *CrtMaster::findMapObject(int project_id, int building_id, int layer_i
 
     foreach(CrtObject* item,dynamic_cast<CrtBuilding*>(obj)->m_lstLayer)
     {
-        if(item->ID() == layer_id)
+        if(item->getID() == layer_id)
         {
             obj = item;
             break;
@@ -344,7 +344,7 @@ CrtObject *CrtMaster::findMapObject(int project_id, int building_id, int layer_i
 
     foreach(CrtObject* item,dynamic_cast<CrtLayer*>(obj)->m_lstDevice)
     {
-        if(item->ID() == device_id)
+        if(item->getID() == device_id)
         {
             obj = item;
             break;

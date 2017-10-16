@@ -1,14 +1,18 @@
 #include "crttreeview.h"
 #include "crttreemodel.h"
 #include "crtmaster.h"
+#include <QDrag>
+#include <QMimeData>
+#include <QPixmap>
 
 CrtTreeView::CrtTreeView(QWidget *parent) : QTreeView(parent)
 {
-    setDragDropMode(QAbstractItemView::DragOnly);
+    //setDragDropMode(QAbstractItemView::DragOnly);
+    setSelectionMode(QAbstractItemView::SingleSelection);
     setUniformRowHeights(true);
     setExpandsOnDoubleClick(false);
     setEditTriggers(QAbstractItemView::SelectedClicked);
-    connect(this,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(itemDoubleClicked(QModelIndex)));
+    connect(this,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(slotItemDoubleClicked(QModelIndex)));
 }
 
 void CrtTreeView::expandItem(const QModelIndex &index)
@@ -20,14 +24,14 @@ void CrtTreeView::expandItem(const QModelIndex &index)
     while(item)
     {
         expand(md->indexFromItem(item));
-        item = item->Parent();
+        item = item->getParent();
     }
 }
 
 void CrtTreeView::deleteItem(const QModelIndex &index)
 {
     CrtObject* item = (CrtObject*)index.internalPointer();
-    CrtObject* parent = (CrtObject*)item->Parent();
+    CrtObject* parent = (CrtObject*)item->getParent();
     CrtTreeModel* md = (CrtTreeModel*)model();
 
     Q_ASSERT(parent);
@@ -73,7 +77,32 @@ void CrtTreeView::insertItems(QList<CrtObject *> &lstData, const QModelIndex &pa
     //emit clicked(parent);
 }
 
-void CrtTreeView::updateItem(CrtObject *obj)
+void CrtTreeView::mouseMoveEvent(QMouseEvent *event)
+{
+    if(event->buttons() & Qt::LeftButton)
+    {
+        QModelIndex index = currentIndex();
+        if(index.isValid())
+        {
+            QByteArray itemData;
+            QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+
+            CrtObject* node = (CrtObject*)index.internalPointer();
+            if (node && !node->getType().compare("device") && !dynamic_cast<CrtDevice*>(node)->isOnMap())
+            {
+                dataStream << reinterpret_cast<qlonglong>(node);
+                QMimeData *data = new QMimeData;
+                data->setData("project/items",itemData);
+                QDrag* drag = new QDrag(this);
+                drag->setMimeData(data);
+                drag->setPixmap(QPixmap(QString(":/device/%1.bmp").arg(dynamic_cast<CrtDevice*>(node)->getDeviceType())));
+                drag->exec(Qt::MoveAction);
+            }
+        }
+    }
+}
+
+void CrtTreeView::slotUpdateItem(CrtObject *obj)
 {
     Q_ASSERT(obj);
     CrtTreeModel* md = (CrtTreeModel*)model();
@@ -82,33 +111,33 @@ void CrtTreeView::updateItem(CrtObject *obj)
         update(index);
 }
 
-void CrtTreeView::itemDoubleClicked(QModelIndex index)
+void CrtTreeView::slotItemDoubleClicked(QModelIndex index)
 {
     if(!index.isValid())return;
     CrtObject* item = (CrtObject*)index.internalPointer();
 
-    if(!item->Type().compare("device"))
+    if(!item->getType().compare("device"))
     {
         CrtDevice* device = dynamic_cast<CrtDevice*>(item);
         if(device->isOnMap())
         {
-            CrtObject* layer = CrtMaster::GetInstance()->findMapObject(device->Parent()->Parent()->ID(),
-                                     device->BuildingID(),device->LayerID());
-            QModelIndex index = static_cast<CrtTreeModel*>(CrtMaster::GetInstance()->MapTreeView()->model())->indexFromItem(layer);
+            CrtObject* layer = CrtMaster::getInstance()->findMapObject(device->getParent()->getParent()->getID(),
+                                     device->getBuildingID(),device->getLayerID());
+            QModelIndex index = static_cast<CrtTreeModel*>(CrtMaster::getInstance()->getMapTreeView()->model())->indexFromItem(layer);
             if(index.isValid())
             {
-                CrtMaster::GetInstance()->MapTreeView()->setCurrentIndex(index);
+                CrtMaster::getInstance()->getMapTreeView()->setCurrentIndex(index);
                 CrtDeviceItem* deviceItem = device->createDeviceItem();
-                CrtMaster::GetInstance()->getCrtGraphicsView()->scene()->clearSelection();
+                CrtMaster::getInstance()->getCrtGraphicsView()->scene()->clearSelection();
                 deviceItem->setSelected(true);
-                CrtMaster::GetInstance()->getCrtGraphicsView()->centerOn(deviceItem);
-                emit updateMainWindowTab(1);
+                CrtMaster::getInstance()->getCrtGraphicsView()->centerOn(deviceItem);
+                emit sigUpdateMainWindowTab(1);
             }
         }
     }
-    else if(!item->Type().compare("layer") || !item->Type().compare("building"))
+    else if(!item->getType().compare("layer") || !item->getType().compare("building"))
     {
-        emit updateMainWindowTab(1);
+        emit sigUpdateMainWindowTab(1);
     }
 }
 

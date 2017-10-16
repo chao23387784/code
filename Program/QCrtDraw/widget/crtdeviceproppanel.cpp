@@ -10,14 +10,20 @@
 CrtDevicePropPanel::CrtDevicePropPanel(QWidget *parent) : QWidget(parent)
 {
     QLabel* labID = new QLabel(tr("Device ID:"),this);
-    editDeviceID = new QLineEdit(this);
-    editDeviceID->setReadOnly(true);
+    m_editDeviceID = new QLineEdit(this);
+    m_editDeviceID->setReadOnly(true);
     //editDeviceID->setValidator(new QIntValidator(1,999,this));
     QLabel* labName = new QLabel(tr("Device Name:"),this);
-    editDeviceName = new QLineEdit(this);
-    editDeviceName->setMaxLength(256);
+    m_editDeviceName = new QLineEdit(this);
+    m_editDeviceName->setMaxLength(256);
     QLabel* labType = new QLabel(tr("Device Type:"),this);
-    cmbDevTypeList = new QComboBox(this);
+    m_cmbDevTypeList = new QComboBox(this);
+    QLabel* labZone = new QLabel(tr("Device Zone:"),this);
+    m_editDeviceZone = new QLineEdit(this);
+    m_editDeviceZone->setValidator(new QIntValidator(0,999,this));
+    QLabel* labAddress = new QLabel(tr("Device Address:"),this);
+    m_editDeviceAddress = new QLineEdit(this);
+    m_editDeviceAddress->setMaxLength(256);
     QDir dir(":/device");//change to local device dir
     dir.setFilter(QDir::Files | QDir::NoSymLinks);
 
@@ -28,70 +34,96 @@ CrtDevicePropPanel::CrtDevicePropPanel(QWidget *parent) : QWidget(parent)
         QFileInfo fi = lst.at(i);
         if(fi.suffix() == "bmp")
         {
-            cmbDevTypeList->addItem(QIcon(fi.filePath()),fi.baseName(),fi.filePath());
+            m_cmbDevTypeList->addItem(QIcon(fi.filePath()),fi.baseName(),fi.filePath());
         }
     }
-    btnSet = new QPushButton(tr("set"),this);
+    m_btnSet = new QPushButton(tr("set"),this);
 
-    QHBoxLayout* layout = new QHBoxLayout(this);
-    layout->addWidget(labID);
-    layout->addWidget(editDeviceID);
-    layout->addWidget(labName);
-    layout->addWidget(editDeviceName);
-    layout->addWidget(labType);
-    layout->addWidget(cmbDevTypeList);
-    layout->addWidget(btnSet);
+    QHBoxLayout* layout1 = new QHBoxLayout(this);
+    layout1->addWidget(labID);
+    layout1->addWidget(m_editDeviceID);
+    layout1->addWidget(labName);
+    layout1->addWidget(m_editDeviceName);
+    layout1->addWidget(labType);
+    layout1->addWidget(m_cmbDevTypeList);
 
-    layout->setStretchFactor(labID,1);
-    layout->setStretchFactor(editDeviceID,3);
-    layout->setStretchFactor(labName,1);
-    layout->setStretchFactor(editDeviceName,3);
-    layout->setStretchFactor(labType,1);
-    layout->setStretchFactor(cmbDevTypeList,3);
-    layout->setStretchFactor(btnSet,1);
 
-    QWidget* container = new QWidget(this);
-    container->setLayout(layout);
+    layout1->setStretchFactor(labID,1);
+    layout1->setStretchFactor(m_editDeviceID,3);
+    layout1->setStretchFactor(labName,1);
+    layout1->setStretchFactor(m_editDeviceName,3);
+    layout1->setStretchFactor(labType,1);
+    layout1->setStretchFactor(m_cmbDevTypeList,3);
+    //layout1->setStretchFactor(btnSet,1);
+
+    QWidget* container1 = new QWidget(this);
+    container1->setLayout(layout1);
+
+    QHBoxLayout* layout2 = new QHBoxLayout(this);
+    layout2->addWidget(labZone);
+    layout2->addWidget(m_editDeviceZone);
+    layout2->addWidget(labAddress);
+    layout2->addWidget(m_editDeviceAddress);
+    layout2->addWidget(m_btnSet);
+
+    layout2->setStretchFactor(labZone,1);
+    layout2->setStretchFactor(m_editDeviceZone,3);
+    layout2->setStretchFactor(labAddress,1);
+    layout2->setStretchFactor(m_editDeviceAddress,6);
+    layout2->setStretchFactor(m_btnSet,1);
+
+    QWidget* container2 = new QWidget(this);
+    container2->setLayout(layout2);
 
     QVBoxLayout* layoutMain = new QVBoxLayout(this);
-    layoutMain->addWidget(container);
+    layoutMain->addWidget(container1);
+    layoutMain->addWidget(container2);
     QTableWidget* frame = new QTableWidget(this);
     layoutMain->addWidget(frame);
 
     setLayout(layoutMain);
 
-    source = NULL;
+    m_source = NULL;
 
-    connect(btnSet,SIGNAL(clicked(bool)),this,SLOT(onSet()));
+    connect(m_btnSet,SIGNAL(clicked(bool)),this,SLOT(slotSet()));
 }
 
 void CrtDevicePropPanel::initPanel(CrtObject *obj)
 {
-    if(obj->Type().compare("device"))return;
+    if(obj->getType().compare("device"))return;
 
-    source = dynamic_cast<CrtDevice*>(obj);
+    m_source = dynamic_cast<CrtDevice*>(obj);
 
-    editDeviceID->setText(QString("%1").arg(source->ID()));
-    editDeviceName->setText(source->Name());
+    m_editDeviceID->setText(QString("%1").arg(m_source->getID()));
+    m_editDeviceName->setText(m_source->getName());
 
-    int nIndex = cmbDevTypeList->findText(source->DeviceType());
-    nIndex == -1 ? cmbDevTypeList->setCurrentText(source->DeviceType()) :
-                   cmbDevTypeList->setCurrentIndex(nIndex);
+    int nIndex = m_cmbDevTypeList->findText(m_source->getDeviceType());
+    nIndex == -1 ? m_cmbDevTypeList->setCurrentText(m_source->getDeviceType()) :
+                   m_cmbDevTypeList->setCurrentIndex(nIndex);
+
+    m_editDeviceZone->setText(QString("%1").arg(m_source->getDeviceZone()));
+    m_editDeviceAddress->setText(m_source->getDeviceAddress());
 }
 
-void CrtDevicePropPanel::onSet()
+void CrtDevicePropPanel::slotSet()
 {
-    if(!source)return;
+    if(!m_source)return;
 
     /*if(!editDeviceID->text().trimmed().isEmpty())
         source->setID(editDeviceID->text().trimmed().toInt());*/
-    if(!editDeviceName->text().trimmed().isEmpty())
-        source->setName(editDeviceName->text().trimmed());
+    if(!m_editDeviceName->text().trimmed().isEmpty())
+        m_source->setName(m_editDeviceName->text().trimmed());
     else
-        source->setName(QString(tr("NT-Device%1")).arg(source->ID()));
+        m_source->setName(QString(tr("NT-Device%1")).arg(m_source->getID()));
 
-    source->setDeviceType(cmbDevTypeList->currentText());
+    if(!m_editDeviceAddress->text().trimmed().isEmpty())
+        m_source->setDeviceAddress(m_editDeviceAddress->text().trimmed());
 
-    CrtMaster::GetInstance()->ProjectTreeView()->updateItem(source);
+    if(!m_editDeviceZone->text().trimmed().isEmpty())
+    m_source->setDeviceZone(m_editDeviceZone->text().trimmed().toInt());
+
+    m_source->setDeviceType(m_cmbDevTypeList->currentText());
+
+    CrtMaster::getInstance()->getProjectTreeView()->slotUpdateItem(m_source);
 }
 

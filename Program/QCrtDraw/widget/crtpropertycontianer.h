@@ -14,11 +14,11 @@ public:
     CrtPropertyContianer(QWidget *parent=0);
     void setCurrentPanel(CrtObject* obj);
 private:
-    CrtProjectPropPanel* panelProject;
-    CrtControllerPropPanel* panelController;
-    CrtLoopPropPanel* panelLoop;
-    CrtDevicePropPanel* panelDevice;
-    CrtWelcomWidget* panelWelcom;
+    CrtProjectPropPanel* m_panelProject;
+    CrtControllerPropPanel* m_panelController;
+    CrtLoopPropPanel* m_panelLoop;
+    CrtDevicePropPanel* m_panelDevice;
+    CrtWelcomWidget* m_panelWelcom;
 };
 
 #endif // CRTPROPERTYCONTIANER_H

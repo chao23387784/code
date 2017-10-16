@@ -4,17 +4,17 @@
 
 CrtGraphicsViewContainer::CrtGraphicsViewContainer(CrtGraphicsView *view, QToolBar *toolbar, QWidget *parent):QStackedWidget(parent)
 {
-    welcom = new CrtWelcomWidget(parent);
-    this->view = view;
-    this->toolbar = toolbar;
+    m_welcom = new CrtWelcomWidget(parent);
+    this->m_view = view;
+    this->m_toolbar = toolbar;
 
     QWidget* widget = new QWidget(this);
     QVBoxLayout* layout = new QVBoxLayout(this);
-    layout->addWidget(this->toolbar);
-    layout->addWidget(this->view);
+    layout->addWidget(this->m_toolbar);
+    layout->addWidget(this->m_view);
     widget->setLayout(layout);
 
-    addWidget(welcom);
+    addWidget(m_welcom);
     addWidget(widget);
 }
 
@@ -26,7 +26,7 @@ void CrtGraphicsViewContainer::setCurrentPanel(CrtObject *obj)
     }
     else
     {
-        if(!obj->Type().compare("layer"))
+        if(!obj->getType().compare("layer"))
         {
             setCurrentIndex(1);
         }

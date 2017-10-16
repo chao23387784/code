@@ -4,7 +4,7 @@
 CrtController::CrtController(CrtObject *parent) : CrtObject(parent)
 {
     setType("controller");
-    maxLoopID = 64;
+    m_nMaxLoopID = 64;
 }
 
 CrtController::~CrtController()
@@ -62,10 +62,10 @@ int CrtController::getAvaliableChildID(int type)
     QList<int> lstID;
     foreach(CrtObject* obj,m_lstLoop)
     {
-        lstID<<obj->ID();
+        lstID<<obj->getID();
     }
 
-    for(int i=1;i<=maxLoopID;i++)
+    for(int i=1;i<=m_nMaxLoopID;i++)
     {
         if(!lstID.contains(i))
         {
@@ -84,10 +84,10 @@ QList<int> CrtController::getAvaliableChildsID(int type)
     QList<int> lstID;
     foreach(CrtObject* obj,m_lstLoop)
     {
-        lstID<<obj->ID();
+        lstID<<obj->getID();
     }
 
-    for(int i=1;i<=maxLoopID;i++)
+    for(int i=1;i<=m_nMaxLoopID;i++)
     {
         if(!lstID.contains(i))
         {
@@ -103,11 +103,11 @@ bool CrtController::isChildIDAvaliable(int id, int type)
     Q_UNUSED(type);
     bool bRes = true;
 
-    if(id > maxLoopID)return false;
+    if(id > m_nMaxLoopID)return false;
 
     foreach(CrtObject* obj,m_lstLoop)
     {
-        if(obj->ID() == id)
+        if(obj->getID() == id)
         {
             bRes = false;
             break;
@@ -119,10 +119,10 @@ bool CrtController::isChildIDAvaliable(int id, int type)
 
 void CrtController::setControllerType(QString t)
 {
-    strType = t;
+    m_strType = t;
 }
 
 void CrtController::setSystemType(QString t)
 {
-    strSystem = t;
+    m_strSystem = t;
 }

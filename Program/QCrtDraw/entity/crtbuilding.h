@@ -20,7 +20,7 @@ public:
     virtual QList<int> getAvaliableChildsID(int type = 0);
     virtual bool isChildIDAvaliable(int id,int type = 0);
 public:
-    int maxLayerID;
+    int m_nMaxLayerID;
     QList<CrtObject*> m_lstLayer;
 };
 

@@ -14,11 +14,13 @@ public:
     void insertItem(CrtObject* data,const QModelIndex &parent);
     void insertItems(QList<CrtObject*>& lstData,const QModelIndex &parent);
 signals:
-    void updateMainWindowTab(int index);
+    void sigUpdateMainWindowTab(int index);
+protected:
+    void mouseMoveEvent(QMouseEvent *event);
 public slots:
-    void updateItem(CrtObject* obj);
+    void slotUpdateItem(CrtObject* obj);
 private slots:
-    void itemDoubleClicked(QModelIndex index);
+    void slotItemDoubleClicked(QModelIndex index);
 };
 
 #endif // CRTTREEVIEW_H

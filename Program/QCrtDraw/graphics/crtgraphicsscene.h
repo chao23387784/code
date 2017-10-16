@@ -16,9 +16,9 @@ public:
     CrtGraphicsScene(QObject *parent = Q_NULLPTR);
     CrtGraphicsScene(CrtLayer *layer);
     ~CrtGraphicsScene();
-    CrtBackground* Background();
+    CrtBackground* getBackground();
     void setBackground(QString strPath);
-    CrtLayer* Layer(){return layer;}
+    CrtLayer* getLayer(){return m_layer;}
 protected:
     void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
     void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
@@ -27,8 +27,8 @@ protected:
     void keyPressEvent(QKeyEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 private:
-    CrtBackground* backgroundItem;
-    CrtLayer* layer;
+    CrtBackground* m_backgroundItem;
+    CrtLayer* m_layer;
 };
 
 #endif // WMFSCENE_H

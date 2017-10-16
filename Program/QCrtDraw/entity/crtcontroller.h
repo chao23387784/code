@@ -23,19 +23,19 @@ public:
     void setControllerType(int t);
     void setControllerType(QString t);
     //int DeviceType(){return nType;}
-    QString ControllerType() {return strType;}
+    QString getControllerType() {return m_strType;}
     void setSystemType(int t);
     void setSystemType(QString t);
-    QString SystemType(){return strSystem;}
-    void setNetID(int t){netid = t;}
-    int NetID(){return netid;}
+    QString getSystemType(){return m_strSystem;}
+    void setNetID(int t){m_netid = t;}
+    int getNetID(){return m_netid;}
 public:
-    int netid;
-    int nSystem;
-    QString strSystem;
-    int nType;
-    QString strType;
-    int maxLoopID;
+    int m_netid;
+    int m_nSystem;
+    QString m_strSystem;
+    int m_nType;
+    QString m_strType;
+    int m_nMaxLoopID;
     QList<CrtObject*> m_lstLoop;
 };
 

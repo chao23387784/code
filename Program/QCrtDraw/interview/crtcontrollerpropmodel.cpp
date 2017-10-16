@@ -3,15 +3,15 @@
 
 CrtControllerPropModel::CrtControllerPropModel(QObject *parent):QAbstractItemModel(parent)
 {
-    source = NULL;
+    m_source = NULL;
 }
 
 QModelIndex CrtControllerPropModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if(!hasIndex(row,column,parent) || !source)
+    if(!hasIndex(row,column,parent) || !m_source)
         return QModelIndex();
 
-    return createIndex(row,column,source->childAt(row));
+    return createIndex(row,column,m_source->childAt(row));
 }
 
 QModelIndex CrtControllerPropModel::parent(const QModelIndex &child) const
@@ -77,27 +77,27 @@ QVariant CrtControllerPropModel::data(const QModelIndex &index, int role) const
     {
     case 0:
     {
-        value = item->ID();
+        value = item->getID();
     }
         break;
     case 1:
     {
-        value = item->Name();
+        value = item->getName();
     }
         break;
     case 2:
     {
-        value = item->NetID();
+        value = item->getNetID();
     }
         break;
     case 3:
     {
-        value = item->ControllerType();
+        value = item->getControllerType();
     }
         break;
     case 4:
     {
-        value = item->SystemType();
+        value = item->getSystemType();
     }
         break;
     }
@@ -123,7 +123,7 @@ bool CrtControllerPropModel::setData(const QModelIndex &index, const QVariant &v
         if(!value.toString().trimmed().isEmpty())
             item->setName(value.toString());
         else
-            item->setName(QString(tr("NT-Controller%1")).arg(item->ID()));
+            item->setName(QString(tr("NT-Controller%1")).arg(item->getID()));
     }
         break;
     case 2:
@@ -152,8 +152,8 @@ bool CrtControllerPropModel::setData(const QModelIndex &index, const QVariant &v
 int CrtControllerPropModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    if(!source)return 0;
-    return source->childCount();
+    if(!m_source)return 0;
+    return m_source->childCount();
 }
 
 int CrtControllerPropModel::columnCount(const QModelIndex &parent) const
@@ -167,7 +167,7 @@ bool CrtControllerPropModel::load(CrtObject *obj)
     if(obj != NULL)
     {
         beginResetModel();
-        source = dynamic_cast<CrtProject*>(obj);
+        m_source = dynamic_cast<CrtProject*>(obj);
         endResetModel();
         return true;
     }
@@ -176,10 +176,10 @@ bool CrtControllerPropModel::load(CrtObject *obj)
 
 void CrtControllerPropModel::unload()
 {
-    if(source)
+    if(m_source)
     {
         beginResetModel();
-        source = NULL;
+        m_source = NULL;
         endResetModel();
     }
 }

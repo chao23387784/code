@@ -17,17 +17,17 @@ CrtTwoWayToolButton::~CrtTwoWayToolButton()
 
 void CrtTwoWayToolButton::initTimer()
 {
-    timer = new QTimer(this);
-    timer->setInterval(1000);
-    connect(timer,SIGNAL(timeout()),this,SLOT(OnTimeOut()));
-    if(timer->isActive())timer->stop();
+    m_timer = new QTimer(this);
+    m_timer->setInterval(1000);
+    connect(m_timer,SIGNAL(timeout()),this,SLOT(slotTimeOut()));
+    if(m_timer->isActive())m_timer->stop();
     //connect(this,SIGNAL(quickpress()),this,SLOT(OnClick()));
 }
 
-void CrtTwoWayToolButton::OnTimeOut()
+void CrtTwoWayToolButton::slotTimeOut()
 {
-    if(timer->isActive())timer->stop();
-    emit holdpress();
+    if(m_timer->isActive())m_timer->stop();
+    emit sigHoldPress();
 
     QMouseEvent* event = new QMouseEvent(QEvent::MouseButtonRelease,QPoint(18,19),Qt::LeftButton,0,Qt::NoModifier);
     QToolButton::mouseReleaseEvent(event);
@@ -41,16 +41,16 @@ void CrtTwoWayToolButton::OnTimeOut()
 
 void CrtTwoWayToolButton::mousePressEvent(QMouseEvent *e)
 {
-    timer->start();
+    m_timer->start();
     QToolButton::mousePressEvent(e);
 }
 
 void CrtTwoWayToolButton::mouseReleaseEvent(QMouseEvent *e)
 {
-    if(timer->isActive())
+    if(m_timer->isActive())
     {
-        timer->stop();
-        emit quickpress();
+        m_timer->stop();
+        emit sigQuickPress();
     }
     QToolButton::mouseReleaseEvent(e);
 }

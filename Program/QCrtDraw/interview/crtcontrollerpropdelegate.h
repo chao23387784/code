@@ -11,7 +11,7 @@ public:
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
     void setModelData(QWidget *editor, QAbstractItemModel *model,const QModelIndex &index) const;
 signals:
-    void valueChanged(QString value) const;
+    void sigValueChanged(QString value) const;
 };
 
 #endif // CRTCONTROLLERPROPDELEGATE_H

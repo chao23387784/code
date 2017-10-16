@@ -16,13 +16,13 @@ public:
                                     int role = Qt::DisplayRole) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     //bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    QMimeData* mimeData(const QModelIndexList &indexes) const;
+    //QMimeData* mimeData(const QModelIndexList &indexes) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     bool load(CrtProject* obj);
     //void unload();
 private:
-    QList<CrtObject*> source;
+    QList<CrtObject*> m_source;
 };
 
 #endif // CRTSETDEVICEMODEL_H

@@ -18,15 +18,15 @@ public:
 signals:
 
 public slots:
-    void onSet();
+    void slotSet();
 private:
-    QLineEdit* editLoopID;
-    QLineEdit* editLoopName;
-    CrtPropView* tblDevice;
-    QPushButton* btnSet;
-    CrtLoop* source;
-    CrtDevicePropModel* model;
-    CrtDevicePropDelegate* delegate;
+    QLineEdit* m_editLoopID;
+    QLineEdit* m_editLoopName;
+    CrtPropView* m_tblDevice;
+    QPushButton* m_btnSet;
+    CrtLoop* m_source;
+    CrtDevicePropModel* m_model;
+    CrtDevicePropDelegate* m_delegate;
 };
 
 #endif // CRTLOOPPROPPANEL_H

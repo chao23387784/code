@@ -2,7 +2,7 @@
 
 CrtObject::CrtObject(CrtObject *parent)
 {
-    this->parent = parent;
+    this->m_parent = parent;
     setType("object");
 }
 

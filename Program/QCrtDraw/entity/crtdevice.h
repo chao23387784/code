@@ -23,20 +23,26 @@ public:
     void setDeviceType(int t);
     void setDeviceType(QString t);
     //int DeviceType(){return nType;}
-    QString DeviceType() {return strType;}
-    void setLayerID(int id){nLayerID = id;}
-    int LayerID(){return nLayerID;}
-    void setBuildingID(int id){nBuildingID = id;}
-    int BuildingID(){return nBuildingID;}
+    QString getDeviceType() {return m_strDevType;}
+    void setLayerID(int id){m_nLayerID = id;}
+    int getLayerID(){return m_nLayerID;}
+    void setBuildingID(int id){m_nBuildingID = id;}
+    int getBuildingID(){return m_nBuildingID;}
     CrtDeviceItem* createDeviceItem();
     void destroyDeviceItem();
-    bool isOnMap(){return item != NULL;}
+    bool isOnMap(){return m_item != NULL;}
+    void setDeviceAddress(QString a);
+    QString getDeviceAddress(){return m_strAddress;}
+    void setDeviceZone(int z);
+    int getDeviceZone(){return m_nZoneID;}
 private:
-    int nType;
-    QString strType;
-    int nLayerID;
-    int nBuildingID;
-    CrtDeviceItem* item;
+    int m_nType;
+    QString m_strDevType;
+    QString m_strAddress;
+    int m_nZoneID;
+    int m_nLayerID;
+    int m_nBuildingID;
+    CrtDeviceItem* m_item;
 };
 
 #endif // CRTDEVICE_H

@@ -19,14 +19,14 @@ public:
 signals:
 
 public slots:
-    void onSet();
+    void slotSet();
 private:
-    CrtPropView* tblController;
-    QLineEdit* editProjectName;
-    QPushButton* btnSet;
-    CrtProject* source;
-    CrtControllerPropModel* model;
-    CrtControllerPropDelegate* delegate;
+    CrtPropView* m_tblController;
+    QLineEdit* m_editProjectName;
+    QPushButton* m_btnSet;
+    CrtProject* m_source;
+    CrtControllerPropModel* m_model;
+    CrtControllerPropDelegate* m_delegate;
 };
 
 #endif // CRTPROJECTPROPPANEL_H

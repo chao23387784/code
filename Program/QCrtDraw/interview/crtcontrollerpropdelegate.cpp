@@ -26,7 +26,7 @@ QWidget *CrtControllerPropDelegate::createEditor(QWidget *parent, const QStyleOp
     {
         QLineEdit* editControllerName = new QLineEdit(parent);
         editControllerName->setMaxLength(256);
-        connect(editControllerName,SIGNAL(textEdited(QString)),this,SIGNAL(valueChanged(QString)));
+        connect(editControllerName,SIGNAL(textEdited(QString)),this,SIGNAL(sigValueChanged(QString)));
         return editControllerName;
     }
         break;
@@ -34,23 +34,23 @@ QWidget *CrtControllerPropDelegate::createEditor(QWidget *parent, const QStyleOp
     {
         QLineEdit* editNetID = new QLineEdit(parent);
         editNetID->setValidator(new QIntValidator(0,999,parent));
-        connect(editNetID,SIGNAL(textEdited(QString)),this,SIGNAL(valueChanged(QString)));
+        connect(editNetID,SIGNAL(textEdited(QString)),this,SIGNAL(sigValueChanged(QString)));
         return editNetID;
     }
         break;
     case 3://controller type
     {
         QComboBox* cmbControllerType = new QComboBox(parent);
-        cmbControllerType->addItems(*(CrtMaster::GetInstance()->ControllerType()));
-        connect(cmbControllerType,SIGNAL(activated(QString)),this,SIGNAL(valueChanged(QString)));
+        cmbControllerType->addItems(*(CrtMaster::getInstance()->getControllerType()));
+        connect(cmbControllerType,SIGNAL(activated(QString)),this,SIGNAL(sigValueChanged(QString)));
         return cmbControllerType;
     }
         break;
     case 4://system type
     {
         QComboBox* cmbControllerSystem = new QComboBox(parent);
-        cmbControllerSystem->addItems(*(CrtMaster::GetInstance()->SystemType()));
-        connect(cmbControllerSystem,SIGNAL(activated(QString)),this,SIGNAL(valueChanged(QString)));
+        cmbControllerSystem->addItems(*(CrtMaster::getInstance()->getSystemType()));
+        connect(cmbControllerSystem,SIGNAL(activated(QString)),this,SIGNAL(sigValueChanged(QString)));
         return cmbControllerSystem;
     }
         break;

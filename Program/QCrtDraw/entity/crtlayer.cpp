@@ -3,8 +3,8 @@
 
 CrtLayer::CrtLayer(CrtObject *parent) : CrtObject(parent)
 {
-    filePath = "";
-    scene = new CrtGraphicsScene(this);
+    m_strFilePath = "";
+    m_scene = new CrtGraphicsScene(this);
     setType("layer");
 }
 
@@ -14,7 +14,7 @@ CrtLayer::~CrtLayer()
     {
         dynamic_cast<CrtDevice*>(item)->destroyDeviceItem();
     }
-    SAFE_DELETE(scene);
+    SAFE_DELETE(m_scene);
     m_lstDevice.clear();
 }
 
@@ -22,9 +22,9 @@ void CrtLayer::addChild(CrtObject *child)
 {
     if(m_lstDevice.contains(child))return;
     m_lstDevice.append(child);
-    dynamic_cast<CrtDevice*>(child)->setLayerID(ID());
-    dynamic_cast<CrtDevice*>(child)->setBuildingID(Parent()->ID());
-    scene->addItem(dynamic_cast<CrtDevice*>(child)->createDeviceItem());
+    dynamic_cast<CrtDevice*>(child)->setLayerID(getID());
+    dynamic_cast<CrtDevice*>(child)->setBuildingID(getParent()->getID());
+    m_scene->addItem(dynamic_cast<CrtDevice*>(child)->createDeviceItem());
 }
 
 CrtObject *CrtLayer::childAt(int nIndex, int type)
@@ -38,13 +38,13 @@ CrtObject *CrtLayer::childAt(int nIndex, int type)
 void CrtLayer::removeChild(int nIndex, int type)
 {
     Q_UNUSED(type);
-    Q_ASSERT(scene);
+    Q_ASSERT(m_scene);
 
     if(m_lstDevice.count()<=0 || nIndex >= m_lstDevice.count() || nIndex < 0)
         return;
 
     CrtDevice* item = dynamic_cast<CrtDevice*>(m_lstDevice[nIndex]);
-    scene->removeItem(item->createDeviceItem());
+    m_scene->removeItem(item->createDeviceItem());
     item->destroyDeviceItem();
     item->setLayerID(-1);
     item->setBuildingID(-1);
@@ -78,17 +78,17 @@ int CrtLayer::childCount(int type)
     scene = s;
 }*/
 
-CrtGraphicsScene *CrtLayer::Scene()
+CrtGraphicsScene *CrtLayer::getScene()
 {
-    return scene;
+    return m_scene;
 }
 
 void CrtLayer::setBackground(QString strPath)
 {
-    Q_ASSERT(scene);
-    scene->setBackground(strPath);
-    scene->addItem(scene->Background());
-    filePath = strPath;
+    Q_ASSERT(m_scene);
+    m_scene->setBackground(strPath);
+    m_scene->addItem(m_scene->getBackground());
+    m_strFilePath = strPath;
 }
 
 /*CrtBackground *CrtLayer::BackGround()

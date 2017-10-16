@@ -8,7 +8,7 @@
 CrtGraphicsView::CrtGraphicsView(QWidget *parent)
     :QGraphicsView(parent)
 {
-    viewStatus = None;
+    m_viewStatus = None;
 
     setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing |
                    QPainter::HighQualityAntialiasing | QPainter::SmoothPixmapTransform);
@@ -69,7 +69,7 @@ void CrtGraphicsView::mousePressEvent(QMouseEvent *event)
         QGraphicsView::mousePressEvent(event);
     }*/
 
-    if(viewStatus == Pan)
+    if(m_viewStatus == Pan)
     {
         setDragMode(QGraphicsView::ScrollHandDrag);
     }
@@ -109,7 +109,7 @@ void CrtGraphicsView::mouseReleaseEvent(QMouseEvent *event)
     }*/
 
     QGraphicsView::mouseReleaseEvent(event);
-    if(viewStatus == Pan)
+    if(m_viewStatus == Pan)
     {
         setDragMode(QGraphicsView::RubberBandDrag);
     }
@@ -117,7 +117,7 @@ void CrtGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 
 void CrtGraphicsView::setViewStatus(ViewStatus mode)
 {
-    viewStatus = mode;
+    m_viewStatus = mode;
 }
 
 void CrtGraphicsView::zoomIn()

@@ -3,15 +3,15 @@
 
 CrtLoopPropModel::CrtLoopPropModel(QObject *parent):QAbstractItemModel(parent)
 {
-    source = NULL;
+    m_source = NULL;
 }
 
 QModelIndex CrtLoopPropModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if(!hasIndex(row,column,parent) || !source)
+    if(!hasIndex(row,column,parent) || !m_source)
         return QModelIndex();
 
-    return createIndex(row,column,source->childAt(row));
+    return createIndex(row,column,m_source->childAt(row));
 }
 
 QModelIndex CrtLoopPropModel::parent(const QModelIndex &child) const
@@ -47,9 +47,9 @@ QVariant CrtLoopPropModel::data(const QModelIndex &index, int role) const
         return QVariant();
     CrtLoop* item = static_cast<CrtLoop*>(index.internalPointer());
     if(index.column() == 0)
-        return item->ID();
+        return item->getID();
     else if(index.column() == 1)
-        return item->Name();
+        return item->getName();
 
     return QVariant();
 }
@@ -73,7 +73,7 @@ bool CrtLoopPropModel::setData(const QModelIndex &index, const QVariant &value, 
         if(!value.toString().trimmed().isEmpty())
             item->setName(value.toString());
         else
-            item->setName(QString(tr("NT-Loop%1")).arg(item->ID()));
+            item->setName(QString(tr("NT-Loop%1")).arg(item->getID()));
     }
         break;
     }
@@ -84,8 +84,8 @@ bool CrtLoopPropModel::setData(const QModelIndex &index, const QVariant &value, 
 int CrtLoopPropModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    if(!source)return 0;
-    return source->childCount();
+    if(!m_source)return 0;
+    return m_source->childCount();
 }
 
 int CrtLoopPropModel::columnCount(const QModelIndex &parent) const
@@ -99,7 +99,7 @@ bool CrtLoopPropModel::load(CrtObject *obj)
     if(obj != NULL)
     {
         beginResetModel();
-        source = dynamic_cast<CrtController*>(obj);
+        m_source = dynamic_cast<CrtController*>(obj);
         endResetModel();
         return true;
     }
@@ -108,10 +108,10 @@ bool CrtLoopPropModel::load(CrtObject *obj)
 
 void CrtLoopPropModel::unload()
 {
-    if(source)
+    if(m_source)
     {
         beginResetModel();
-        source = NULL;
+        m_source = NULL;
         endResetModel();
     }
 }

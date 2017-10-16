@@ -13,22 +13,22 @@ class SqliteEngine : QObject
 public:
     SqliteEngine();
     ~SqliteEngine();
-    void InitDatabase(QString pathName,QString userName,QString password);
-    QString GetSqlError();
-    bool ExeNoQuery(const QString& sql);
-    bool ExeQuery(const QString& sql,QSqlQuery& query);
-    bool OpenDatabase();
-    bool IsConnAlive();
-    void CloseDatabase();
-    bool IsTableExist(const QString& tableName);
-    bool CreateDefaultCrtTables();
-    QString PathName(){return pathName;}
+    void initDatabase(QString pathName,QString userName,QString password);
+    QString getSqlError();
+    bool exeNoQuery(const QString& sql);
+    bool exeQuery(const QString& sql,QSqlQuery& query);
+    bool openDatabase();
+    bool isConnAlive();
+    void closeDatabase();
+    bool isTableExist(const QString& tableName);
+    bool createDefaultCrtTables();
+    QString getPathName(){return m_strPathName;}
     bool beginTransaction();
     bool endTransaction();
     bool rollback();
 private:
-    QSqlDatabase conn;
-    QString pathName;
+    QSqlDatabase m_conn;
+    QString m_strPathName;
 };
 
 #endif // SQLITEENGINE_H

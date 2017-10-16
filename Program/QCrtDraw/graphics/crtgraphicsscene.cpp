@@ -16,33 +16,33 @@
 CrtGraphicsScene::CrtGraphicsScene(QObject *parent)
     :QGraphicsScene(parent)
 {
-    backgroundItem = NULL;
-    layer = NULL;
+    m_backgroundItem = NULL;
+    m_layer = NULL;
 }
 
 CrtGraphicsScene::CrtGraphicsScene(CrtLayer *layer)
 {
-    backgroundItem = NULL;
-    this->layer = layer;
+    m_backgroundItem = NULL;
+    this->m_layer = layer;
 }
 
 CrtGraphicsScene::~CrtGraphicsScene()
 {
-    SAFE_DELETE(backgroundItem);
+    SAFE_DELETE(m_backgroundItem);
 }
 
-CrtBackground *CrtGraphicsScene::Background()
+CrtBackground *CrtGraphicsScene::getBackground()
 {
-    if(backgroundItem!=NULL)
-        return backgroundItem;
+    if(m_backgroundItem!=NULL)
+        return m_backgroundItem;
     return NULL;
 }
 
 void CrtGraphicsScene::setBackground(QString strPath)
 {
-    SAFE_DELETE(backgroundItem);
-    backgroundItem = new CrtBackground();
-    backgroundItem->setWmfFile(strPath);
+    SAFE_DELETE(m_backgroundItem);
+    m_backgroundItem = new CrtBackground();
+    m_backgroundItem->setWmfFile(strPath);
 }
 
 void CrtGraphicsScene::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
@@ -80,16 +80,16 @@ void CrtGraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
         if(obj)
         {
             CrtDevice* device = dynamic_cast<CrtDevice*>(obj);
-            if(device->BuildingID() != -1 && device->LayerID() != -1)
+            if(device->getBuildingID() != -1 && device->getLayerID() != -1)
             {
-                CrtObject* ly = CrtMaster::GetInstance()->findMapObject(0,device->BuildingID(),device->LayerID());
+                CrtObject* ly = CrtMaster::getInstance()->findMapObject(0,device->getBuildingID(),device->getLayerID());
                 ly->removeChild(ly->indexOf(obj));
             }
             device->createDeviceItem()->setPos(event->scenePos());
-            layer->addChild(obj);
+            m_layer->addChild(obj);
             clearSelection();
             device->createDeviceItem()->setSelected(true);
-            emit CrtMaster::GetInstance()->getCrtGraphicsView()->dragDone();
+            emit CrtMaster::getInstance()->getCrtGraphicsView()->sigDragDone();
         }
     }
 }
@@ -102,11 +102,11 @@ void CrtGraphicsScene::keyPressEvent(QKeyEvent *event)
             while (!selectedItems().isEmpty()) {
                 CrtDeviceItem* item = static_cast<CrtDeviceItem*>(selectedItems().front());
                 removeItem(item);
-                if(layer)
+                if(m_layer)
                 {
-                    CrtDevice* device = item->Device();
+                    CrtDevice* device = item->getDevice();
                     Q_ASSERT(device);
-                    layer->removeChild(layer->indexOf(device));
+                    m_layer->removeChild(m_layer->indexOf(device));
                 }
             }
         }
@@ -117,23 +117,23 @@ void CrtGraphicsScene::keyPressEvent(QKeyEvent *event)
 
 void CrtGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    CrtSetDeviceDlg* dlg = CrtMaster::GetInstance()->getCrtSetDeviceDlg();
+    CrtSetDeviceDlg* dlg = CrtMaster::getInstance()->getCrtSetDeviceDlg();
     if(dlg->isVisible())
     {
         CrtObject* obj = dlg->getCurrentObject();
         if(obj)
         {
             CrtDevice* device = dynamic_cast<CrtDevice*>(obj);
-            if(device->BuildingID() != -1 && device->LayerID() != -1)
+            if(device->getBuildingID() != -1 && device->getLayerID() != -1)
             {
-                CrtObject* ly = CrtMaster::GetInstance()->findMapObject(0,device->BuildingID(),device->LayerID());
+                CrtObject* ly = CrtMaster::getInstance()->findMapObject(0,device->getBuildingID(),device->getLayerID());
                 ly->removeChild(ly->indexOf(obj));
             }
             device->createDeviceItem()->setPos(event->scenePos());
-            layer->addChild(obj);
+            m_layer->addChild(obj);
             clearSelection();
             device->createDeviceItem()->setSelected(true);
-            emit CrtMaster::GetInstance()->getCrtGraphicsView()->dragDone();
+            emit CrtMaster::getInstance()->getCrtGraphicsView()->sigDragDone();
         }
     }
     else

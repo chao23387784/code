@@ -18,19 +18,19 @@ public:
     virtual QList<int> getAvaliableChildsID(int type = 0){Q_UNUSED(type);return QList<int>();}
     virtual bool isChildIDAvaliable(int id,int type = 0){Q_UNUSED(id);Q_UNUSED(type);return false;}
     
-    void setID(int nID){id = nID;}
-    int ID(){return id;}
-    void setName(const QString strName){name = strName;}
-    QString Name(){return name;}
-    void setParent(CrtObject* p){parent = p;}
-    CrtObject* Parent(){return parent;}
-    void setType(const QString strType){type = strType;}
-    QString Type(){return type;}
+    void setID(int nID){m_nID = nID;}
+    int getID(){return m_nID;}
+    void setName(const QString strName){m_strName = strName;}
+    QString getName(){return m_strName;}
+    void setParent(CrtObject* p){m_parent = p;}
+    CrtObject* getParent(){return m_parent;}
+    void setType(const QString strType){m_strType = strType;}
+    QString getType(){return m_strType;}
 private:
-    int id;
-    QString name;
-    QString type;
-    CrtObject* parent;
+    int m_nID;
+    QString m_strName;
+    QString m_strType;
+    CrtObject* m_parent;
 };
 
 #endif // CRTOBJECT_H

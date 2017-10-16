@@ -24,7 +24,7 @@ QWidget *CrtLoopPropDelegate::createEditor(QWidget *parent, const QStyleOptionVi
     {
         QLineEdit* editLoopName = new QLineEdit(parent);
         editLoopName->setMaxLength(256);
-        connect(editLoopName,SIGNAL(textEdited(QString)),this,SIGNAL(valueChanged(QString)));
+        connect(editLoopName,SIGNAL(textEdited(QString)),this,SIGNAL(sigValueChanged(QString)));
         return editLoopName;
     }
         break;

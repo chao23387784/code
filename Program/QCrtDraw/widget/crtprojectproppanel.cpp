@@ -8,55 +8,55 @@
 CrtProjectPropPanel::CrtProjectPropPanel(QWidget *parent) : QWidget(parent)
 {
     QLabel* lab = new QLabel(tr("Project Name:"),this);
-    editProjectName = new QLineEdit(this);
-    editProjectName->setMaxLength(256);
-    tblController = new CrtPropView(this);
-    btnSet = new QPushButton(tr("set"),this);
+    m_editProjectName = new QLineEdit(this);
+    m_editProjectName->setMaxLength(256);
+    m_tblController = new CrtPropView(this);
+    m_btnSet = new QPushButton(tr("set"),this);
 
     QHBoxLayout* layoutTop = new QHBoxLayout(this);
     layoutTop->addWidget(lab);
-    layoutTop->addWidget(editProjectName);
-    layoutTop->addWidget(btnSet);
+    layoutTop->addWidget(m_editProjectName);
+    layoutTop->addWidget(m_btnSet);
 
     QWidget* layoutContainer = new QWidget(this);
     layoutContainer->setLayout(layoutTop);
 
     QVBoxLayout* layoutMain = new QVBoxLayout(this);
     layoutMain->addWidget(layoutContainer);
-    layoutMain->addWidget(tblController);
+    layoutMain->addWidget(m_tblController);
 
     setLayout(layoutMain);
 
-    source = NULL;
+    m_source = NULL;
 
-    connect(btnSet,SIGNAL(clicked(bool)),this,SLOT(onSet()));
+    connect(m_btnSet,SIGNAL(clicked(bool)),this,SLOT(slotSet()));
 
-    model = new CrtControllerPropModel(this);
-    tblController->setModel(model);
-    delegate = new CrtControllerPropDelegate(this);
-    tblController->setItemDelegate(delegate);
+    m_model = new CrtControllerPropModel(this);
+    m_tblController->setModel(m_model);
+    m_delegate = new CrtControllerPropDelegate(this);
+    m_tblController->setItemDelegate(m_delegate);
 
-    tblController->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_tblController->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    connect(delegate,SIGNAL(valueChanged(QString)),tblController,SLOT(itemDataChanged(QString)));
+    connect(m_delegate,SIGNAL(sigValueChanged(QString)),m_tblController,SLOT(slotItemDataChanged(QString)));
 }
 
 void CrtProjectPropPanel::initPanel(CrtObject *obj)
 {
-    if(!obj || obj->Type().compare("project") || !model)return;
+    if(!obj || obj->getType().compare("project") || !m_model)return;
 
-    source = dynamic_cast<CrtProject*>(obj);
+    m_source = dynamic_cast<CrtProject*>(obj);
 
-    editProjectName->setText(source->Name());
+    m_editProjectName->setText(m_source->getName());
 
-    model->unload();
-    model->load(obj);
+    m_model->unload();
+    m_model->load(obj);
 }
 
-void CrtProjectPropPanel::onSet()
+void CrtProjectPropPanel::slotSet()
 {
-    if(editProjectName->text().trimmed().isEmpty() || !source)return;
-    source->setName(editProjectName->text().trimmed());
-    CrtMaster::GetInstance()->ProjectTreeView()->updateItem(source);
+    if(m_editProjectName->text().trimmed().isEmpty() || !m_source)return;
+    m_source->setName(m_editProjectName->text().trimmed());
+    CrtMaster::getInstance()->getProjectTreeView()->slotUpdateItem(m_source);
 }
 

@@ -10,28 +10,28 @@ SqliteEngine::SqliteEngine()
 
 SqliteEngine::~SqliteEngine()
 {
-    CloseDatabase();
+    closeDatabase();
 }
 
-void SqliteEngine::InitDatabase(QString pathName, QString userName, QString password)
+void SqliteEngine::initDatabase(QString pathName, QString userName, QString password)
 {
-    conn = QSqlDatabase::addDatabase("QSQLITE");
-    conn.setDatabaseName(pathName);
-    conn.setUserName(userName);
-    conn.setPassword(password);
+    m_conn = QSqlDatabase::addDatabase("QSQLITE");
+    m_conn.setDatabaseName(pathName);
+    m_conn.setUserName(userName);
+    m_conn.setPassword(password);
 }
 
-QString SqliteEngine::GetSqlError()
+QString SqliteEngine::getSqlError()
 {
-    QSqlError se = conn.lastError();
+    QSqlError se = m_conn.lastError();
     if(se.isValid())
         return se.text();
     return "";
 }
 
-bool SqliteEngine::ExeNoQuery(const QString &sql)
+bool SqliteEngine::exeNoQuery(const QString &sql)
 {
-    if(!conn.isOpen())return false;
+    if(!m_conn.isOpen())return false;
     QSqlQuery sq;
     if(!sq.exec(sql))
     {
@@ -41,35 +41,35 @@ bool SqliteEngine::ExeNoQuery(const QString &sql)
     return sq.exec(sql);
 }
 
-bool SqliteEngine::ExeQuery(const QString &sql,QSqlQuery& query)
+bool SqliteEngine::exeQuery(const QString &sql,QSqlQuery& query)
 {
-    if(!conn.isOpen())return false;
+    if(!m_conn.isOpen())return false;
     bool bRes = query.exec(sql);
 
     return bRes;
 }
 
-bool SqliteEngine::OpenDatabase()
+bool SqliteEngine::openDatabase()
 {
-    if(conn.isOpen())return true;
-    return conn.open();
+    if(m_conn.isOpen())return true;
+    return m_conn.open();
 }
 
-bool SqliteEngine::IsConnAlive()
+bool SqliteEngine::isConnAlive()
 {
-    return conn.isOpen();
+    return m_conn.isOpen();
 }
 
-void SqliteEngine::CloseDatabase()
+void SqliteEngine::closeDatabase()
 {
-    if(conn.isOpen())conn.close();
+    if(m_conn.isOpen())m_conn.close();
 }
 
-bool SqliteEngine::IsTableExist(const QString &tableName)
+bool SqliteEngine::isTableExist(const QString &tableName)
 {
-    if(OpenDatabase())
+    if(openDatabase())
     {
-        QSqlQuery query(conn);
+        QSqlQuery query(m_conn);
         query.exec(QString("select count(*) from sqlite_master where type='table' and name='%1'").arg(tableName));
         if(query.next())
         {
@@ -86,11 +86,11 @@ bool SqliteEngine::IsTableExist(const QString &tableName)
     return false;
 }
 
-bool SqliteEngine::CreateDefaultCrtTables()
+bool SqliteEngine::createDefaultCrtTables()
 {
-    if(!conn.isOpen())return false;
+    if(!m_conn.isOpen())return false;
     QSqlQuery sq;
-    if(!IsTableExist("UserTb"))
+    if(!isTableExist("UserTb"))
     {
         sq.exec("create table UserTb("
                 "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -99,7 +99,7 @@ bool SqliteEngine::CreateDefaultCrtTables()
                 "authority INT);");
         sq.exec("insert into UserTb(""name,password,authority) values('admin','1',3),('power','1',2),('user','1',1);");
     }
-    if(!IsTableExist("PortSettingTb"))
+    if(!isTableExist("PortSettingTb"))
     {
         sq.exec("create table PortSettingTb("
                 "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -110,13 +110,13 @@ bool SqliteEngine::CreateDefaultCrtTables()
                 "netid VARCHAR(2),"
                 "checktime VARCHAR(1));");
     }
-    if(!IsTableExist("ProjectTb"))
+    if(!isTableExist("ProjectTb"))
     {
         sq.exec("create table ProjectTb("
                 "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 "name VARCHAR(255));");
     }
-    if(!IsTableExist("ControllerTb"))
+    if(!isTableExist("ControllerTb"))
     {
         sq.exec("create table ControllerTb("
                 "key INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -129,7 +129,7 @@ bool SqliteEngine::CreateDefaultCrtTables()
                 "netid INT,"
                 "project_id INT);");
     }
-    if(!IsTableExist("LoopTb"))
+    if(!isTableExist("LoopTb"))
     {
         sq.exec("create table LoopTb("
                 "key INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -138,7 +138,7 @@ bool SqliteEngine::CreateDefaultCrtTables()
                 "controller_id INT,"
                 "project_id INT);");
     }
-    if(!IsTableExist("BuildingTb"))
+    if(!isTableExist("BuildingTb"))
     {
         sq.exec("create table BuildingTb("
                 "key INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -146,7 +146,7 @@ bool SqliteEngine::CreateDefaultCrtTables()
                 "name VARCHAR(255),"
                 "project_id INT);");
     }
-    if(!IsTableExist("LayerTb"))
+    if(!isTableExist("LayerTb"))
     {
         sq.exec("create table LayerTb("
                 "key INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -156,7 +156,7 @@ bool SqliteEngine::CreateDefaultCrtTables()
                 "building_id INT,"
                 "project_id INT);");
     }
-    if(!IsTableExist("DeviceTb"))
+    if(!isTableExist("DeviceTb"))
     {
         sq.exec("create table DeviceTb("
                 "key INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -166,29 +166,32 @@ bool SqliteEngine::CreateDefaultCrtTables()
                 "type_name VARCHAR(255),"
                 "x REAL,"
                 "y REAL,"
+                "scale REAL,"
                 "loop_id INT,"
                 "controller_id INT,"
                 "layer_id INT,"
                 "building_id INT,"
-                "project_id INT);");
+                "project_id INT,"
+                "zone INT,"
+                "address VARCHAR(255));");
     }
     return true;
 }
 
 bool SqliteEngine::beginTransaction()
 {
-    if(!conn.isOpen())return false;
-    return conn.transaction();
+    if(!m_conn.isOpen())return false;
+    return m_conn.transaction();
 }
 
 bool SqliteEngine::endTransaction()
 {
-    if(!conn.isOpen())return false;
-    return conn.commit();
+    if(!m_conn.isOpen())return false;
+    return m_conn.commit();
 }
 
 bool SqliteEngine::rollback()
 {
-    if(!conn.isOpen())return false;
-    return conn.rollback();
+    if(!m_conn.isOpen())return false;
+    return m_conn.rollback();
 }

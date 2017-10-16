@@ -26,11 +26,19 @@ QWidget *CrtDevicePropDelegate::createEditor(QWidget *parent, const QStyleOption
     {
         QLineEdit* editDeviceName = new QLineEdit(parent);
         editDeviceName->setMaxLength(256);
-        connect(editDeviceName,SIGNAL(textEdited(QString)),this,SIGNAL(valueChanged(QString)));
+        connect(editDeviceName,SIGNAL(textEdited(QString)),this,SIGNAL(sigValueChanged(QString)));
         return editDeviceName;
     }
         break;
-    case 2://device type
+    case 2:
+    {
+        QLineEdit* editDeviceZone = new QLineEdit(parent);
+        editDeviceZone->setValidator(new QIntValidator(0,999,parent));
+        connect(editDeviceZone,SIGNAL(textEdited(QString)),this,SIGNAL(sigValueChanged(QString)));
+        return editDeviceZone;
+    }
+        break;
+    case 3://device type
     {
         QComboBox* cmbDevTypeList = new QComboBox(parent);
         QDir dir(":/device");//change to local device dir
@@ -46,8 +54,16 @@ QWidget *CrtDevicePropDelegate::createEditor(QWidget *parent, const QStyleOption
                 cmbDevTypeList->addItem(QIcon(fi.filePath()),fi.baseName(),fi.filePath());
             }
         }
-        connect(cmbDevTypeList,SIGNAL(activated(QString)),this,SIGNAL(valueChanged(QString)));
+        connect(cmbDevTypeList,SIGNAL(activated(QString)),this,SIGNAL(sigValueChanged(QString)));
         return cmbDevTypeList;
+    }
+        break;
+    case 4:
+    {
+        QLineEdit* editDeviceAddress = new QLineEdit(parent);
+        editDeviceAddress->setMaxLength(256);
+        connect(editDeviceAddress,SIGNAL(textEdited(QString)),this,SIGNAL(sigValueChanged(QString)));
+        return editDeviceAddress;
     }
         break;
     }
@@ -61,6 +77,8 @@ void CrtDevicePropDelegate::setEditorData(QWidget *editor, const QModelIndex &in
     {
     //case 0:
     case 1:
+    case 2:
+    case 4:
     {
         QString value = index.data().toString();
         QLineEdit* ctrl = qobject_cast<QLineEdit*>(editor);
@@ -68,7 +86,7 @@ void CrtDevicePropDelegate::setEditorData(QWidget *editor, const QModelIndex &in
         ctrl->setText(value);
     }
         break;
-    case 2:
+    case 3:
     {
         QString value = index.data().toString();
         QComboBox* ctrl = qobject_cast<QComboBox*>(editor);
@@ -97,6 +115,7 @@ void CrtDevicePropDelegate::setModelData(QWidget *editor, QAbstractItemModel *mo
     }
         break;*/
     case 1:
+    case 4:
     {
         QLineEdit* ctrl = qobject_cast<QLineEdit*>(editor);
         Q_ASSERT(ctrl);
@@ -104,6 +123,13 @@ void CrtDevicePropDelegate::setModelData(QWidget *editor, QAbstractItemModel *mo
     }
         break;
     case 2:
+    {
+        QLineEdit* ctrl = qobject_cast<QLineEdit*>(editor);
+        Q_ASSERT(ctrl);
+        model->setData(index,ctrl->text().trimmed().toInt());
+    }
+        break;
+    case 3:
     {
         QComboBox* ctrl = qobject_cast<QComboBox*>(editor);
         Q_ASSERT(ctrl);
