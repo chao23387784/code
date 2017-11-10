@@ -1,16 +1,16 @@
 #ifndef CRTDEVICEITEM_H
 #define CRTDEVICEITEM_H
-#include <QGraphicsItem>
 #include <QImage>
 #include <QByteArray>
 #include "crtdevice.h"
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneWheelEvent>
+#include "crtgraphicsitem.h"
 
 class CrtDevice;
 
-class CrtDeviceItem : public QGraphicsItem
+class CrtDeviceItem : public CrtGraphicsItem
 {
 public:
     CrtDeviceItem(CrtDevice* device,QGraphicsItem *parent = Q_NULLPTR);
@@ -23,11 +23,7 @@ public:
     CrtDevice* getDevice(){return m_device;}
     void setImage(const QString& imgPath);
     void initItem();
-    QPolygonF rectToPolygon(const QRectF &rect, const QMatrix &matrix) const;
 protected:
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 private:
     QImage* m_img;

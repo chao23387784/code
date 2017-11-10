@@ -3,7 +3,7 @@
 
 CrtProject::CrtProject(CrtObject *parent) : CrtObject(parent)
 {
-    setType("project");
+    setType(OT_PROJECT);
     m_nMaxControllerID = 128;
     m_nMaxBuildingID = 80;
 }
@@ -25,12 +25,12 @@ CrtProject::~CrtProject()
 
 void CrtProject::addChild(CrtObject *child)
 {
-    if(!child->getType().compare("controller"))
+    if(child->getType() == OT_CONTROLLER)
     {
         if(m_lstController.contains(child))return;
         m_lstController.append(child);
     }
-    else if(!child->getType().compare("building"))
+    else if(child->getType() == OT_BUILDING)
     {
         if(m_lstBuilding.contains(child))return;
         m_lstBuilding.append(child);
@@ -78,11 +78,11 @@ void CrtProject::removeChild(int nIndex, int type)
 int CrtProject::indexOf(CrtObject *child)
 {
     if(!child)return -1;
-    if(!child->getType().compare("controller"))
+    if(child->getType() == OT_CONTROLLER)
     {
         return m_lstController.indexOf(child);
     }
-    else if(!child->getType().compare("building"))
+    else if(child->getType() == OT_BUILDING)
     {
         return m_lstBuilding.indexOf(child);
     }

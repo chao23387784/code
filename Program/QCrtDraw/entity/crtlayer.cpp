@@ -5,7 +5,7 @@ CrtLayer::CrtLayer(CrtObject *parent) : CrtObject(parent)
 {
     m_strFilePath = "";
     m_scene = new CrtGraphicsScene(this);
-    setType("layer");
+    setType(OT_LAYER);
 }
 
 CrtLayer::~CrtLayer()
@@ -25,6 +25,7 @@ void CrtLayer::addChild(CrtObject *child)
     dynamic_cast<CrtDevice*>(child)->setLayerID(getID());
     dynamic_cast<CrtDevice*>(child)->setBuildingID(getParent()->getID());
     m_scene->addItem(dynamic_cast<CrtDevice*>(child)->createDeviceItem());
+    dynamic_cast<CrtDevice*>(child)->createDeviceItem()->setZValue(1);
 }
 
 CrtObject *CrtLayer::childAt(int nIndex, int type)
@@ -86,6 +87,10 @@ CrtGraphicsScene *CrtLayer::getScene()
 void CrtLayer::setBackground(QString strPath)
 {
     Q_ASSERT(m_scene);
+    if(m_scene->getBackground())
+    {
+        m_scene->removeItem(m_scene->getBackground());
+    }
     m_scene->setBackground(strPath);
     m_scene->addItem(m_scene->getBackground());
     m_strFilePath = strPath;

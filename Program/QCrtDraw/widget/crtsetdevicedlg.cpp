@@ -93,7 +93,7 @@ void CrtSetDeviceDlg::loadData()
     m_cmbLoop->addItem(tr("All"));
     m_cmbProject->addItem(QString::number(CrtMaster::getInstance()->getProject()->getID()));
     m_model->load(CrtMaster::getInstance()->getProject());
-    connect(CrtMaster::getInstance()->getCrtGraphicsView(),SIGNAL(sigDragDone()),this,SLOT(slotDragDone()));
+    connect(CrtMaster::getInstance()->getCrtGraphicsView(),SIGNAL(sigDropDevice()),this,SLOT(slotDragDone()));
     connect(m_cmbProject,SIGNAL(currentIndexChanged(int)),this,SLOT(slotComboItemSelected()));
     connect(m_cmbController,SIGNAL(currentIndexChanged(int)),this,SLOT(slotComboItemSelected()));
     connect(m_cmbLoop,SIGNAL(currentIndexChanged(int)),this,SLOT(slotComboItemSelected()));
@@ -102,7 +102,7 @@ void CrtSetDeviceDlg::loadData()
 
 void CrtSetDeviceDlg::releaseData()
 {
-    disconnect(CrtMaster::getInstance()->getCrtGraphicsView(),SIGNAL(sigDragDone()),this,SLOT(slotDragDone()));
+    disconnect(CrtMaster::getInstance()->getCrtGraphicsView(),SIGNAL(sigDropDevice()),this,SLOT(slotDragDone()));
     disconnect(m_cmbProject,SIGNAL(currentIndexChanged(int)),this,SLOT(slotComboItemSelected()));
     disconnect(m_cmbController,SIGNAL(currentIndexChanged(int)),this,SLOT(slotComboItemSelected()));
     disconnect(m_cmbLoop,SIGNAL(currentIndexChanged(int)),this,SLOT(slotComboItemSelected()));

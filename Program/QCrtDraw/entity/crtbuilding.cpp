@@ -3,7 +3,7 @@
 
 CrtBuilding::CrtBuilding(CrtObject *parent) : CrtObject(parent)
 {
-    setType("building");
+    setType(OT_BUILDING);
     m_nMaxLayerID = 80;
 }
 

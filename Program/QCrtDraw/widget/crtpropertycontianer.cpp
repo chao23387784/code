@@ -17,19 +17,19 @@ CrtPropertyContianer::CrtPropertyContianer(QWidget *parent):QStackedWidget(paren
 
 void CrtPropertyContianer::setCurrentPanel(CrtObject *obj)
 {
-    if(!obj->getType().compare("project"))
+    if(obj->getType() == OT_PROJECT)
     {
         m_panelProject->initPanel(obj);
         setCurrentIndex(1);
-    }else if(!obj->getType().compare("controller"))
+    }else if(obj->getType() == OT_CONTROLLER)
     {
         m_panelController->initPanel(obj);
         setCurrentIndex(2);
-    }else if(!obj->getType().compare("loop"))
+    }else if(obj->getType() == OT_LOOP)
     {
         m_panelLoop->initPanel(obj);
         setCurrentIndex(3);
-    }else if(!obj->getType().compare("device"))
+    }else if(obj->getType() == OT_DEVICE)
     {
         m_panelDevice->initPanel(obj);
         setCurrentIndex(4);

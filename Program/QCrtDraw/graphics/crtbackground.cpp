@@ -10,6 +10,8 @@ CrtBackground::CrtBackground(QGraphicsItem *parent)
     :QGraphicsItem(parent)
 {
     m_bkImage = NULL;
+    m_wmfFile = "";
+    m_wmfSize = QSizeF(1280, 1024);
 }
 
 CrtBackground::~CrtBackground()
@@ -27,19 +29,22 @@ void CrtBackground::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    if(m_bkImage == NULL)
+    if(m_wmfFile != "")
     {
-        Libwmf::WmfPainterBackend backend(painter,m_wmfSize/*QSizeF(80,80)*/);
-        backend.load(m_wmfFile);
-        painter->save();
-        backend.play();
-        painter->restore();
-    }
-    else
-    {
-        //painter->save();
-        painter->drawImage(0,0,*m_bkImage);
-        //painter->restore();
+        if(m_bkImage == NULL)
+        {
+            Libwmf::WmfPainterBackend backend(painter,m_wmfSize/*QSizeF(80,80)*/);
+            backend.load(m_wmfFile);
+            painter->save();
+            backend.play();
+            painter->restore();
+        }
+        else
+        {
+            //painter->save();
+            painter->drawImage(0,0,*m_bkImage);
+            //painter->restore();
+        }
     }
 }
 

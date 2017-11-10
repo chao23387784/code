@@ -24,7 +24,7 @@ void CrtSetDeviceView::mouseMoveEvent(QMouseEvent *event)
             if(s_index.isValid())
             {
                 CrtObject* node = (CrtObject*)s_index.internalPointer();
-                if (node && !node->getType().compare("device") && !dynamic_cast<CrtDevice*>(node)->isOnMap())
+                if (node && node->getType() == OT_DEVICE && !dynamic_cast<CrtDevice*>(node)->isOnMap())
                 {
                     dataStream << reinterpret_cast<qlonglong>(node);
                     QMimeData *data = new QMimeData;

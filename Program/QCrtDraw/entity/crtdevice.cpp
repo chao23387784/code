@@ -6,7 +6,7 @@
 CrtDevice::CrtDevice(CrtObject *parent) : CrtObject(parent)
 {
     m_item = NULL;
-    setType("device");
+    setType(OT_DEVICE);
     m_nLayerID = -1;
     m_nBuildingID = -1;
 }

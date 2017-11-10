@@ -3,7 +3,7 @@
 
 CrtLoop::CrtLoop(CrtObject *parent) : CrtObject(parent)
 {
-    setType("loop");
+    setType(OT_LOOP);
     m_nMaxDeviceID = 252;
 }
 

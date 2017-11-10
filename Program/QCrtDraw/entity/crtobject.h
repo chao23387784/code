@@ -3,6 +3,18 @@
 
 #include <QList>
 
+enum ObjectType
+{
+    OT_OBJECT,
+    OT_PROJECT,
+    OT_CONTROLLER,
+    OT_LOOP,
+    OT_DEVICE,
+    OT_BUILDING,
+    OT_LAYER,
+    OT_TEMP
+};
+
 class CrtObject
 {
 public:
@@ -24,12 +36,12 @@ public:
     QString getName(){return m_strName;}
     void setParent(CrtObject* p){m_parent = p;}
     CrtObject* getParent(){return m_parent;}
-    void setType(const QString strType){m_strType = strType;}
-    QString getType(){return m_strType;}
+    void setType(ObjectType type){m_type = type;}
+    ObjectType getType(){return m_type;}
 private:
     int m_nID;
     QString m_strName;
-    QString m_strType;
+    ObjectType m_type;
     CrtObject* m_parent;
 };
 

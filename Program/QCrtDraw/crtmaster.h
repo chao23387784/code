@@ -25,7 +25,7 @@ public:
     void initSystemType();
     void initControllerType();
     QIcon* getDeviceIcon(QString strDeviceType);
-    QIcon* getTreeIcon(QString strTreeIconType);
+    QIcon* getTreeIcon(int nTreeIconType);
     const QStringList* getControllerType();
     const QStringList* getSystemType();
     void clearDeviceIconHashTable();
@@ -52,7 +52,7 @@ private:
     ~CrtMaster();
     static CrtMaster* m_inst;   
     QHash<QString,QIcon*> m_lstDevTypeIcon;
-    QHash<QString,QIcon*> m_lstTreeIcon;
+    QHash<int,QIcon*> m_lstTreeIcon;
     QStringList* m_lstSystemType;
     QStringList* m_lstControllerType;
     QHash<int,QString> m_lstDevType;

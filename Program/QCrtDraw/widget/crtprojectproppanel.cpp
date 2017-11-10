@@ -43,7 +43,7 @@ CrtProjectPropPanel::CrtProjectPropPanel(QWidget *parent) : QWidget(parent)
 
 void CrtProjectPropPanel::initPanel(CrtObject *obj)
 {
-    if(!obj || obj->getType().compare("project") || !m_model)return;
+    if(!obj || obj->getType() != OT_PROJECT || !m_model)return;
 
     m_source = dynamic_cast<CrtProject*>(obj);
 

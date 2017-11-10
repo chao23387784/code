@@ -50,7 +50,7 @@ CrtLoopPropPanel::CrtLoopPropPanel(QWidget *parent) : QWidget(parent)
 
 void CrtLoopPropPanel::initPanel(CrtObject *obj)
 {
-    if(obj->getType().compare("loop") || !m_model)return;
+    if(obj->getType() != OT_LOOP || !m_model)return;
 
     m_source = dynamic_cast<CrtLoop*>(obj);
 

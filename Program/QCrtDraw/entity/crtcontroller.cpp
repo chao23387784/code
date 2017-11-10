@@ -3,7 +3,7 @@
 
 CrtController::CrtController(CrtObject *parent) : CrtObject(parent)
 {
-    setType("controller");
+    setType(OT_CONTROLLER);
     m_nMaxLoopID = 64;
 }
 

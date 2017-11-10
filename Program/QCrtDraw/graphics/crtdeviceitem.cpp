@@ -6,25 +6,26 @@
 #include "crttreemodel.h"
 
 CrtDeviceItem::CrtDeviceItem(CrtDevice *device, QGraphicsItem *parent)
-    :QGraphicsItem(parent)
+    :CrtGraphicsItem(parent)
 {
+    setType(GT_DEVICE);
     m_img = NULL;
     this->m_device = device;
     initItem();
 }
 
-CrtDeviceItem::CrtDeviceItem(const QByteArray &imgData, CrtDevice *device, QGraphicsItem *parent)
+CrtDeviceItem::CrtDeviceItem(const QByteArray &imgData, CrtDevice *device, QGraphicsItem *parent):CrtGraphicsItem(parent)
 {
-    Q_UNUSED(parent);
+    setType(GT_DEVICE);
     m_img = new QImage();
     m_img->loadFromData(imgData);
     this->m_device = device;
     initItem();
 }
 
-CrtDeviceItem::CrtDeviceItem(const QString &imgPath, CrtDevice *device, QGraphicsItem *parent)
+CrtDeviceItem::CrtDeviceItem(const QString &imgPath, CrtDevice *device, QGraphicsItem *parent):CrtGraphicsItem(parent)
 {
-    Q_UNUSED(parent);
+    setType(GT_DEVICE);
     m_img = new QImage();
     m_img->load(imgPath);
     this->m_device = device;
@@ -104,21 +105,6 @@ void CrtDeviceItem::initItem()
                                      m_device->getParent()->getID(),m_device->getID()));
 }
 
-void CrtDeviceItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
-{
-    QGraphicsItem::hoverEnterEvent(event);
-}
-
-void CrtDeviceItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
-{
-    QGraphicsItem::hoverLeaveEvent(event);
-}
-
-void CrtDeviceItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
-{
-    QGraphicsItem::hoverMoveEvent(event);
-}
-
 void CrtDeviceItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QModelIndex index = static_cast<CrtTreeModel*>(CrtMaster::getInstance()->getProjectTreeView()->model())->indexFromItem(m_device);
@@ -127,14 +113,4 @@ void CrtDeviceItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         CrtMaster::getInstance()->getProjectTreeView()->setCurrentIndex(index);
     }
     QGraphicsItem::mouseDoubleClickEvent(event);
-}
-
-QPolygonF CrtDeviceItem::rectToPolygon(const QRectF &rect, const QMatrix &matrix) const
-{
-    QPolygonF polygon;
-    polygon.append(matrix.map(rect.topLeft()));
-    polygon.append(matrix.map(rect.topRight()));
-    polygon.append(matrix.map(rect.bottomRight()));
-    polygon.append(matrix.map(rect.bottomLeft()));
-    return polygon;
 }

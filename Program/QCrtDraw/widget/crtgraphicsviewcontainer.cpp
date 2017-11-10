@@ -26,7 +26,7 @@ void CrtGraphicsViewContainer::setCurrentPanel(CrtObject *obj)
     }
     else
     {
-        if(!obj->getType().compare("layer"))
+        if(obj->getType() == OT_LAYER)
         {
             setCurrentIndex(1);
         }

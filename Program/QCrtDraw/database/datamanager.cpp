@@ -31,7 +31,7 @@ bool DataManager::load(CrtProject *proj)
     bool bRes = true;
     if(m_engine->openDatabase())
     {
-        proj->setType("init");
+        proj->setType(OT_TEMP);
         loadObject(proj);
     }
     else
@@ -49,9 +49,9 @@ void DataManager::loadObject(CrtObject *obj)
 {
     if(!m_engine->isConnAlive())return;
     if(!obj)return;
-    if(!obj->getType().compare("init"))
+    if(obj->getType() == OT_TEMP)
     {
-        obj->setType("project");
+        obj->setType(OT_PROJECT);
         QString sql = "select * from ProjectTb";
         QSqlQuery query;
         if(m_engine->exeQuery(sql,query))
@@ -65,7 +65,7 @@ void DataManager::loadObject(CrtObject *obj)
             }
         }
     }
-    else if(!obj->getType().compare("project"))
+    else if(obj->getType() == OT_PROJECT)
     {
         QString sql = "select * from ControllerTb";
         QSqlQuery query;
@@ -100,7 +100,7 @@ void DataManager::loadObject(CrtObject *obj)
             }
         }
     }
-    else if(!obj->getType().compare("controller"))
+    else if(obj->getType() == OT_CONTROLLER)
     {
         QString sql = QString("select * from LoopTb where controller_id = %1 and project_id = %2").arg(obj->getID()).arg(obj->getParent()->getID());
         QSqlQuery query;
@@ -117,7 +117,7 @@ void DataManager::loadObject(CrtObject *obj)
             }
         }
     }
-    else if(!obj->getType().compare("loop"))
+    else if(obj->getType() == OT_LOOP)
     {
         QString sql = QString("select * from DeviceTb where loop_id = %1 and controller_id = %2 and project_id = %3").arg(obj->getID()).arg(obj->getParent()->getID()).arg(obj->getParent()->getParent()->getID());
         QSqlQuery query;
@@ -137,7 +137,7 @@ void DataManager::loadObject(CrtObject *obj)
             }
         }
     }
-    else if(!obj->getType().compare("building"))
+    else if(obj->getType() == OT_BUILDING)
     {
         QString sql = QString("select * from LayerTb where building_id = %1 and project_id = %2").arg(obj->getID()).arg(obj->getParent()->getID());
         QSqlQuery query;
@@ -159,7 +159,7 @@ void DataManager::loadObject(CrtObject *obj)
             }
         }
     }
-    else if(!obj->getType().compare("layer"))
+    else if(obj->getType() == OT_LAYER)
     {
         QString sql = QString("select * from DeviceTb where layer_id = %1 and building_id = %2").arg(obj->getID()).arg(obj->getParent()->getID());
         QSqlQuery query;
@@ -187,7 +187,7 @@ bool DataManager::saveObject(CrtObject *obj)
     if(!m_engine->isConnAlive())return false;
     if(!obj)return true;
 
-    if(!obj->getType().compare("project"))
+    if(obj->getType() == OT_PROJECT)
     {
         QSqlQuery query;
 
@@ -209,7 +209,7 @@ bool DataManager::saveObject(CrtObject *obj)
             if(!saveObject(item))return false;
         }
     }
-    else if(!obj->getType().compare("controller"))
+    else if(obj->getType() == OT_CONTROLLER)
     {
         QSqlQuery query;
 
@@ -230,7 +230,7 @@ bool DataManager::saveObject(CrtObject *obj)
             if(!saveObject(item))return false;
         }
     }
-    else if(!obj->getType().compare("loop"))
+    else if(obj->getType() == OT_LOOP)
     {
         QSqlQuery query;
 
@@ -249,7 +249,7 @@ bool DataManager::saveObject(CrtObject *obj)
             if(!saveObject(item))return false;
         }
     }
-    else if(!obj->getType().compare("building"))
+    else if(obj->getType() == OT_BUILDING)
     {
         QSqlQuery query;
 
@@ -267,7 +267,7 @@ bool DataManager::saveObject(CrtObject *obj)
             if(!saveObject(item))return false;
         }
     }
-    else if(!obj->getType().compare("layer"))
+    else if(obj->getType() == OT_LAYER)
     {
         QSqlQuery query;
 
@@ -282,7 +282,7 @@ bool DataManager::saveObject(CrtObject *obj)
 
         query.clear();
     }
-    else if(!obj->getType().compare("device"))
+    else if(obj->getType() == OT_DEVICE)
     {
         QSqlQuery query;
 

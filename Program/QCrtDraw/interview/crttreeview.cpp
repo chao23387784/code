@@ -88,7 +88,7 @@ void CrtTreeView::mouseMoveEvent(QMouseEvent *event)
             QDataStream dataStream(&itemData, QIODevice::WriteOnly);
 
             CrtObject* node = (CrtObject*)index.internalPointer();
-            if (node && !node->getType().compare("device") && !dynamic_cast<CrtDevice*>(node)->isOnMap())
+            if (node && node->getType() == OT_DEVICE && !dynamic_cast<CrtDevice*>(node)->isOnMap())
             {
                 dataStream << reinterpret_cast<qlonglong>(node);
                 QMimeData *data = new QMimeData;
@@ -116,7 +116,7 @@ void CrtTreeView::slotItemDoubleClicked(QModelIndex index)
     if(!index.isValid())return;
     CrtObject* item = (CrtObject*)index.internalPointer();
 
-    if(!item->getType().compare("device"))
+    if(item->getType() == OT_DEVICE)
     {
         CrtDevice* device = dynamic_cast<CrtDevice*>(item);
         if(device->isOnMap())
@@ -135,7 +135,7 @@ void CrtTreeView::slotItemDoubleClicked(QModelIndex index)
             }
         }
     }
-    else if(!item->getType().compare("layer") || !item->getType().compare("building"))
+    else if(item->getType() == OT_LAYER || item->getType() == OT_BUILDING)
     {
         emit sigUpdateMainWindowTab(1);
     }

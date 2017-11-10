@@ -90,7 +90,7 @@ CrtDevicePropPanel::CrtDevicePropPanel(QWidget *parent) : QWidget(parent)
 
 void CrtDevicePropPanel::initPanel(CrtObject *obj)
 {
-    if(obj->getType().compare("device"))return;
+    if(obj->getType() != OT_DEVICE)return;
 
     m_source = dynamic_cast<CrtDevice*>(obj);
 

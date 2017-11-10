@@ -85,7 +85,7 @@ CrtControllerPropPanel::CrtControllerPropPanel(QWidget *parent) : QWidget(parent
 
 void CrtControllerPropPanel::initPanel(CrtObject *obj)
 {
-    if(!obj || obj->getType().compare("controller") || !m_model)return;
+    if(!obj || obj->getType() != OT_CONTROLLER || !m_model)return;
 
     m_source = dynamic_cast<CrtController*>(obj);
 

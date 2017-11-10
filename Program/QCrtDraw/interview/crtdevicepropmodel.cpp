@@ -76,7 +76,7 @@ QVariant CrtDevicePropModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DecorationRole && index.column() == 3)
     {
         QString strIcon;
-        if(!item->getType().compare("device"))
+        if(item->getType() == OT_DEVICE)
         {
             strIcon = dynamic_cast<CrtDevice*>(item)->getDeviceType();
             return *(CrtMaster::getInstance()->getDeviceIcon(strIcon));

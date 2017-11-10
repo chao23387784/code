@@ -70,11 +70,11 @@ void CrtMaster::initDeviceIcon()
 
 void CrtMaster::initTreeIcon()
 {
-    m_lstTreeIcon.insert("project",new QIcon(":/img/project.png"));
-    m_lstTreeIcon.insert("controller",new QIcon(":/img/controller.png"));
-    m_lstTreeIcon.insert("loop",new QIcon(":/img/loop.png"));
-    m_lstTreeIcon.insert("building",new QIcon(":/img/building.png"));
-    m_lstTreeIcon.insert("layer",new QIcon(":/img/layer.png"));
+    m_lstTreeIcon.insert(OT_PROJECT,new QIcon(":/img/project.png"));
+    m_lstTreeIcon.insert(OT_CONTROLLER,new QIcon(":/img/controller.png"));
+    m_lstTreeIcon.insert(OT_LOOP,new QIcon(":/img/loop.png"));
+    m_lstTreeIcon.insert(OT_BUILDING,new QIcon(":/img/building.png"));
+    m_lstTreeIcon.insert(OT_LAYER,new QIcon(":/img/layer.png"));
 }
 
 void CrtMaster::initSystemType()
@@ -103,9 +103,9 @@ QIcon *CrtMaster::getDeviceIcon(QString strDeviceType)
     return m_lstDevTypeIcon.value(strDeviceType,NULL);
 }
 
-QIcon *CrtMaster::getTreeIcon(QString strTreeIconType)
+QIcon *CrtMaster::getTreeIcon(int nTreeIconType)
 {
-    return m_lstTreeIcon.value(strTreeIconType,NULL);
+    return m_lstTreeIcon.value(nTreeIconType,NULL);
 }
 
 const QStringList *CrtMaster::getControllerType()

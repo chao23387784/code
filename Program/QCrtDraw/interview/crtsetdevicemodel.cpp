@@ -78,7 +78,7 @@ QVariant CrtSetDeviceModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DecorationRole && index.column() == 4)
     {
         QString strIcon;
-        if(!item->getType().compare("device"))
+        if(item->getType() == OT_DEVICE)
         {
             strIcon = dynamic_cast<CrtDevice*>(item)->getDeviceType();
             return *(CrtMaster::getInstance()->getDeviceIcon(strIcon));
@@ -149,6 +149,7 @@ int CrtSetDeviceModel::rowCount(const QModelIndex &parent) const
 
 int CrtSetDeviceModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
     return 5;
 }
 
@@ -165,4 +166,6 @@ bool CrtSetDeviceModel::load(CrtProject *obj)
     }
 
     endResetModel();
+
+    return true;
 }

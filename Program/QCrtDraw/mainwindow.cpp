@@ -42,6 +42,7 @@ void MainWindow::initUi()
 
     QToolBar* toolBar = new QToolBar(this);
     QToolBar* toolBarProject = new QToolBar(this);
+    //toolBarProject->setMinimumWidth(300);
     toolBarProject->setMinimumHeight(40);
     QToolBar* toolBarMap = new QToolBar(this);
     toolBarMap->setMinimumHeight(40);
@@ -102,7 +103,7 @@ void MainWindow::initUi()
     m_btnZoomin = new QAction(QIcon(":/img/zoomin.png"),tr("Zoom In"),this);
     m_btnZoomout = new QAction(QIcon(":/img/zoomout.png"),tr("Zoom Out"),this);
     toolBarGraphics->addAction(m_btnSetBackImage);
-    m_btnPan = toolBarGraphics->addWidget(m_tbPan);
+    toolBarGraphics->addWidget(m_tbPan);
     toolBarGraphics->addAction(m_btnZoomin);
     toolBarGraphics->addAction(m_btnZoomout);
 
@@ -110,15 +111,15 @@ void MainWindow::initUi()
     m_tbSetDevice->setIcon(QIcon(":/img/marknormalpoint.png"));
     m_tbSetDevice->setToolTip(tr("Set Device"));
     m_tbSetDevice->setCheckable(true);
-    m_btnSetDevice = toolBarGraphics->addWidget(m_tbSetDevice);
+    toolBarGraphics->addWidget(m_tbSetDevice);
     //toolBarGraphics->addAction(btnSetDevice);
 
-    m_tbCustomSize = new QToolButton();
+    m_tbCustomSize = new QToolButton(this);
     m_tbCustomSize->setIcon(QIcon(":/img/customsize.png"));
     m_tbCustomSize->setToolTip(tr("Custom Size"));
     toolBarGraphics->addWidget(m_tbCustomSize);
 
-    m_customSizeMenu = new QMenu();
+    m_customSizeMenu = new QMenu(this);
     m_customSizeMenu->addAction(tr("8px"))->setData(0.25);
     m_customSizeMenu->addAction(tr("16px"))->setData(0.5);
     m_customSizeMenu->addAction(tr("32px"))->setData(1.0);
@@ -129,6 +130,12 @@ void MainWindow::initUi()
 
     m_tbCustomSize->setPopupMode(QToolButton::InstantPopup);
     m_tbCustomSize->setMenu(m_customSizeMenu);
+
+    m_tbSetText = new QToolButton(this);
+    m_tbSetText->setIcon(QIcon(":/img/type.png"));
+    m_tbSetText->setToolTip(tr("Set Text"));
+    m_tbSetText->setCheckable(true);
+    toolBarGraphics->addWidget(m_tbSetText);
 
     m_cmbDevList = new QComboBox();
     m_cmbDevList->setFixedWidth(180);
@@ -243,6 +250,7 @@ void MainWindow::initConnect()
     connect(m_btnCloseProj,SIGNAL(triggered(bool)),this,SLOT(slotCloseProject()));
     connect(m_tbPan,SIGNAL(clicked(bool)),this,SLOT(slotViewTransform()));
     connect(m_tbSetDevice,SIGNAL(clicked(bool)),this,SLOT(slotSetDevice()));
+    connect(m_tbSetText,SIGNAL(clicked(bool)),this,SLOT(slotSetText()));
     connect(m_btnZoomin,SIGNAL(triggered(bool)),this,SLOT(slotViewTransform()));
     connect(m_btnZoomout,SIGNAL(triggered(bool)),this,SLOT(slotViewTransform()));
     connect(m_crtBtnAddController,SIGNAL(sigQuickPress()),this,SLOT(slotAddController()));
@@ -261,8 +269,9 @@ void MainWindow::initConnect()
     connect(m_crtBtnAddLayer,SIGNAL(sigHoldPress()),this,SLOT(slotAddLayers()));
     connect(m_btnDeleteLayer,SIGNAL(triggered(bool)),this,SLOT(slotDeleteLayer()));
     connect(m_btnSetBackImage,SIGNAL(triggered(bool)),this,SLOT(slotSetBackImage()));
-    connect(m_btnSetDevice,SIGNAL(triggered(bool)),this,SLOT(slotSetDevice()));
+    //connect(m_btnSetDevice,SIGNAL(triggered(bool)),this,SLOT(slotSetDevice()));
     connect(m_customSizeMenu, SIGNAL(triggered(QAction*)), this, SLOT(slotCustomSize(QAction*)));
+    //connect(m_btnSetText,SIGNAL(triggered(bool)),this,SLOT(slotSetText()));
     connect(static_cast<QItemSelectionModel*>(m_treeProject->selectionModel()),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(slotProjectItemChanged()));
     connect(static_cast<QItemSelectionModel*>(m_treeMap->selectionModel()),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(slotMapItemChanged()));
     connect(m_treeProject,SIGNAL(sigUpdateMainWindowTab(int)),this,SLOT(slotUpdateCurrentVisibleTab(int)));
@@ -302,6 +311,9 @@ void MainWindow::slotOpenProject()
     QString path = QFileDialog::getOpenFileName(this,tr("Open Project File"),
                                                 QDir::currentPath(),
                                                 tr("SQLite Database Files (*.db)"));
+
+    if(path.isNull())return;
+
     if(!QFileInfo(path).exists())
     {
         QMessageBox::information(this,tr("warning"),tr("file not exists!"));
@@ -673,6 +685,9 @@ void MainWindow::slotSetBackImage()
     QString path = QFileDialog::getOpenFileName(this, tr("Open Map File"),
                                                 QDir::currentPath(),
                                                 tr("Images (*.jpg *.png *.wmf *.bmp)"));
+
+    if(path.isNull())return;
+
     if(!QFileInfo(path).exists())
     {
         QMessageBox::information(this,tr("warning"),tr("file not exists!"));
@@ -706,13 +721,13 @@ void MainWindow::slotProjectItemChanged()
     CrtObject* item = (CrtObject*)index.internalPointer();
     if(item)
     {
-        if(!item->getType().compare("project"))
+        if(item->getType() == OT_PROJECT)
            emit slotUpdateToolbarProjectState(1);
-        else if(!item->getType().compare("controller"))
+        else if(item->getType() == OT_CONTROLLER)
             emit slotUpdateToolbarProjectState(2);
-        else if(!item->getType().compare("loop"))
+        else if(item->getType() == OT_LOOP)
             emit slotUpdateToolbarProjectState(6);
-        else if(!item->getType().compare("device"))
+        else if(item->getType() == OT_DEVICE)
             emit slotUpdateToolbarProjectState(7);
         else
             emit slotUpdateToolbarProjectState(0);
@@ -728,11 +743,11 @@ void MainWindow::slotMapItemChanged()
     CrtObject* item = (CrtObject*)index.internalPointer();
     if(item)
     {
-        if(!item->getType().compare("project"))
+        if(item->getType() == OT_PROJECT)
            emit slotUpdateToolbarMapState(3);
-        else if(!item->getType().compare("building"))
+        else if(item->getType() == OT_BUILDING)
             emit slotUpdateToolbarMapState(4);
-        else if(!item->getType().compare("layer"))
+        else if(item->getType() == OT_LAYER)
         {
             emit slotUpdateToolbarMapState(5);
             m_mapView->setScene(dynamic_cast<CrtLayer*>(item)->getScene());
@@ -752,10 +767,12 @@ void MainWindow::slotSetDevice()
             m_panelDevice->setVisible(false);
             //panelProject->setVisible(true);
             CrtMaster::getInstance()->getCrtSetDeviceDlg()->releaseData();
+            m_mapView->setEditStatue(NoOperate);
         }else
         {
             CrtMaster::getInstance()->getCrtSetDeviceDlg()->loadData();
             m_panelDevice->setVisible(true);
+            m_mapView->setEditStatue(SetDevice);
             //panelProject->setVisible(false);
         }
     }
@@ -765,7 +782,23 @@ void MainWindow::slotCustomSize(QAction *action)
 {
     foreach(QGraphicsItem* item,CrtMaster::getInstance()->getCrtGraphicsView()->scene()->selectedItems())
     {
-        item->setScale(action->data().toFloat());
+        if(dynamic_cast<CrtGraphicsItem*>(item)->getType() == GT_DEVICE)
+            item->setScale(action->data().toFloat());
+    }
+}
+
+void MainWindow::slotSetText()
+{
+    if(CrtMaster::getInstance()->getProject())
+    {
+        if(!m_tbSetText->isChecked())
+        {
+            m_mapView->m_editText->setVisible(false);
+            m_mapView->setEditStatue(NoOperate);
+        }else
+        {
+            m_mapView->setEditStatue(SetText);
+        }
     }
 }
 

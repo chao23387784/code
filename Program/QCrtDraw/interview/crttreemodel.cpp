@@ -26,7 +26,7 @@ QModelIndex CrtTreeModel::index(int row, int column, const QModelIndex &parent) 
         parentItem=static_cast<CrtObject*>(parent.internalPointer());
     }
 
-    if(!parentItem->getType().compare("layer"))
+    if(parentItem->getType() == OT_LAYER)
         return QModelIndex();
 
     CrtObject *childItem=parentItem->childAt(row,m_nType);
@@ -104,7 +104,7 @@ int CrtTreeModel::rowCount(const QModelIndex &parent) const
     else
         parentItem=static_cast<CrtObject*>(parent.internalPointer());
 
-    if(!parentItem->getType().compare("layer"))return 0;
+    if(parentItem->getType() == OT_LAYER)return 0;
 
     return parentItem->childCount(m_nType);
 }
@@ -122,16 +122,15 @@ QVariant CrtTreeModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DecorationRole && index.column() == 0)
     {
         CrtObject* item = (CrtObject*)index.internalPointer();
-        QString strIcon;
-        if(!item->getType().compare("device"))
+        if(item->getType() == OT_DEVICE)
         {
-            strIcon = dynamic_cast<CrtDevice*>(item)->getDeviceType();
+            QString strIcon = dynamic_cast<CrtDevice*>(item)->getDeviceType();
             return *(CrtMaster::getInstance()->getDeviceIcon(strIcon));
         }
         else
         {
-            strIcon = item->getType();
-            return *(CrtMaster::getInstance()->getTreeIcon(strIcon));
+            int nIcon = item->getType();
+            return *(CrtMaster::getInstance()->getTreeIcon(nIcon));
         }
         return QVariant();
     }
@@ -145,7 +144,7 @@ QVariant CrtTreeModel::data(const QModelIndex &index, int role) const
     if(role == Qt::ForegroundRole && index.column() == 0)
     {
         CrtObject* item = (CrtObject*)index.internalPointer();
-        if(!item->getType().compare("device"))
+        if(item->getType() == OT_DEVICE)
         {
             if(dynamic_cast<CrtDevice*>(item)->isOnMap())
                 return QColor(Qt::red);

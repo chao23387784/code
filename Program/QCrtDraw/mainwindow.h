@@ -54,6 +54,7 @@ private slots:
     void slotMapItemChanged();
     void slotSetDevice();
     void slotCustomSize(QAction* action);
+    void slotSetText();
 public slots:
     void slotUpdateToolbarProjectState(int state);
     void slotUpdateToolbarMapState(int state);
@@ -103,11 +104,13 @@ private:
     QToolButton* m_tbPan;
     QToolButton* m_tbSetDevice;
     QToolButton* m_tbCustomSize;
+    QToolButton* m_tbSetText;
     QMenu* m_customSizeMenu;
-    QAction* m_btnPan;
+    //QAction* m_btnPan;
     QAction* m_btnZoomin;
     QAction* m_btnZoomout;
-    QAction* m_btnSetDevice;
+    //QAction* m_btnSetDevice;
+    //QAction* m_btnSetText;
 };
 
 #endif // MAINWINDOW_H

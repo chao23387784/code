@@ -16,14 +16,16 @@
 CrtGraphicsScene::CrtGraphicsScene(QObject *parent)
     :QGraphicsScene(parent)
 {
-    m_backgroundItem = NULL;
+    m_backgroundItem = new CrtBackground();
     m_layer = NULL;
+    addItem(m_backgroundItem);
 }
 
 CrtGraphicsScene::CrtGraphicsScene(CrtLayer *layer)
 {
-    m_backgroundItem = NULL;
+    m_backgroundItem = new CrtBackground();
     this->m_layer = layer;
+    addItem(m_backgroundItem);
 }
 
 CrtGraphicsScene::~CrtGraphicsScene()
@@ -89,7 +91,7 @@ void CrtGraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
             m_layer->addChild(obj);
             clearSelection();
             device->createDeviceItem()->setSelected(true);
-            emit CrtMaster::getInstance()->getCrtGraphicsView()->sigDragDone();
+            emit CrtMaster::getInstance()->getCrtGraphicsView()->sigDropDevice();
         }
     }
 }
@@ -133,7 +135,7 @@ void CrtGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             m_layer->addChild(obj);
             clearSelection();
             device->createDeviceItem()->setSelected(true);
-            emit CrtMaster::getInstance()->getCrtGraphicsView()->sigDragDone();
+            emit CrtMaster::getInstance()->getCrtGraphicsView()->sigDropDevice();
         }
     }
     else
